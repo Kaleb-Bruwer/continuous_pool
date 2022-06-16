@@ -35,12 +35,16 @@ class Level : public GameState {
     int team_color = 0; // 0 = undefined, 1 = player1 kills solid, 2 = player1 kills stripes
     bool mouse_pressed = false;
 
+    static double time;
+
 public:
     Level();
 
     virtual void handle_events() override;
     virtual void logic() override;
     virtual void render() override;
+
+    static double getTime(){return time;};
 
 private:
     void handle_when_still(SDL_Event& e);
