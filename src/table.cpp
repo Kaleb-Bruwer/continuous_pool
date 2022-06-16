@@ -80,7 +80,8 @@ bool Table::is_pocketed(const Ball& b)
 {
     for (auto& p : pocket_sensors)
     {
-        double dist = std::hypot(b.posData.pos_x - p.x, b.posData.pos_y - p.y);
+        vec2d poc_pos{p.x, p.y};
+        double dist = (b.posData.pos - poc_pos).magnitude();
 
         if (dist <= b.posData.radius) // hit the pocket
             return true;

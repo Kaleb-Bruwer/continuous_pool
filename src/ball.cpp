@@ -24,14 +24,14 @@ void Ball::setTex(const std::string& path)
 
 void Ball::setPos(double px, double py)
 {
-    posData.pos_x = px;
-    posData.pos_y = py;
+    posData.pos[0] = px;
+    posData.pos[1] = py;
 }
 
 void Ball::setVel(double sx, double sy)
 {
-    movData.speed_x = sx;
-    movData.speed_y = sy;
+    movData.speed[0] = sx;
+    movData.speed[1] = sy;
 }
 
 void Ball::move()
@@ -39,22 +39,22 @@ void Ball::move()
     if (is_movable)
     {
         // Update position
-        posData.pos_x += movData.speed_x;
-        posData.pos_y += movData.speed_y;
+        posData.pos[0] += movData.speed[0];
+        posData.pos[1] += movData.speed[1];
 
         // Update Speed
-        movData.speed_x += movData.accel_x;
-        movData.speed_y += movData.accel_y;
+        movData.speed[0] += movData.accel[0];
+        movData.speed[1] += movData.accel[1];
 
         // Apply friction
-        movData.speed_x *= 0.995;
-        movData.speed_y *= 0.995;
+        movData.speed[0] *= 0.995;
+        movData.speed[1] *= 0.995;
 
         // Check for complete stop
-        if (std::abs(movData.speed_x) < 0.08 && std::abs(movData.speed_y) < 0.08)
+        if (std::abs(movData.speed[0]) < 0.08 && std::abs(movData.speed[1]) < 0.08)
         {
-            movData.speed_x = 0.0;
-            movData.speed_y = 0.0;
+            movData.speed[0] = 0.0;
+            movData.speed[1] = 0.0;
         }
 
         // Notify event
@@ -64,12 +64,11 @@ void Ball::move()
 
 void Ball::render()
 {
-    texture.render(static_cast<int>(posData.pos_x - posData.radius),
-                   static_cast<int>(posData.pos_y - posData.radius));
+    texture.render(static_cast<int>(posData.pos[0] - posData.radius),
+                   static_cast<int>(posData.pos[1] - posData.radius));
 }
 
 bool Ball::is_moving() const noexcept
 {
-    return is_movable && (std::abs(movData.speed_x) > 0.0 ||
-                          std::abs(movData.speed_y) > 0.0);
+    return is_movable && !movData.speed.is_zero();
 }

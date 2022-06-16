@@ -8,6 +8,8 @@
 #include <SDL.h>
 
 const double PI = std::atan(1) * 4;
+double Level::time = 0;
+
 
 Level::Level()
     : background{}, p1{}, p2{}, f1{}, b8{}, b1{}, b9{},
@@ -102,8 +104,8 @@ void Level::handle_when_still(SDL_Event& e)
     }
     else if (e.type == SDL_MOUSEBUTTONUP)
     {
-        double force = std::hypot(cueball.posData.pos_x - cue.getX(),
-                                  cueball.posData.pos_y - cue.getY());
+        double force = std::hypot(cueball.posData.pos[0] - cue.getX(),
+                                  cueball.posData.pos[1] - cue.getY());
 
         force /= 8.0;
 
@@ -120,11 +122,11 @@ void Level::handle_when_still(SDL_Event& e)
         int x, y;
         SDL_GetMouseState( &x, &y );
 
-        auto oposed = cueball.posData.pos_y - y;
-        auto hyp = std::hypot(cueball.posData.pos_x - x, cueball.posData.pos_y - y);
+        auto oposed = cueball.posData.pos[1] - y;
+        auto hyp = std::hypot(cueball.posData.pos[0] - x, cueball.posData.pos[1] - y);
         double degrees = (std::asin(oposed / hyp) * 180.0) / PI + 180.0;
 
-        if (x > cueball.posData.pos_x)
+        if (x > cueball.posData.pos[0])
             degrees = 180.0 - degrees;
 
         if (degrees < 0.0)
@@ -136,8 +138,8 @@ void Level::handle_when_still(SDL_Event& e)
         {
             double angle = (cue.getAngle() * PI) / 180.0;
 
-            double px = cueball.posData.pos_x + (std::cos(angle) * hyp) + cueball.posData.radius;
-            double py = cueball.posData.pos_y + (std::sin(angle) * hyp) - cueball.posData.radius + (cue.getHeight()/2.0);
+            double px = cueball.posData.pos[0] + (std::cos(angle) * hyp) + cueball.posData.radius;
+            double py = cueball.posData.pos[1] + (std::sin(angle) * hyp) - cueball.posData.radius + (cue.getHeight()/2.0);
 
             cue.setPos(px, py);
         }
@@ -206,13 +208,13 @@ void Level::check_pocket(Ball& b)
 // Check if a ball has fallen off the table
 bool Level::ball_off_table(Ball& b)
 {
-    if (b.posData.pos_x < tab.getX())
+    if (b.posData.pos[0] < tab.getX())
         return true;
-    else if (b.posData.pos_x > tab.getX() + tab.getWidth())
+    else if (b.posData.pos[0] > tab.getX() + tab.getWidth())
         return true;
-    else if (b.posData.pos_y < tab.getY())
+    else if (b.posData.pos[1] < tab.getY())
         return true;
-    else if (b.posData.pos_y > tab.getY() + tab.getHeight())
+    else if (b.posData.pos[1] > tab.getY() + tab.getHeight())
         return true;
     else
         return false;
@@ -231,14 +233,14 @@ std::pair<double, double> Level::get_safe_pos()
 
         for (auto& b: balls)
             if (b.is_visible)
-                if (std::hypot(b.posData.pos_x - posX, b.posData.pos_y - posY) < b.posData.radius*2)
+                if (std::hypot(b.posData.pos[0] - posX, b.posData.pos[1] - posY) < b.posData.radius*2)
                 {
                     posX -= b.posData.radius * 2.0;
                     shifted = true;
                     break;
                 }
 
-        if (std::hypot(cueball.posData.pos_x - posX, cueball.posData.pos_y - posY) < cueball.posData.radius*2)
+        if (std::hypot(cueball.posData.pos[0] - posX, cueball.posData.pos[1] - posY) < cueball.posData.radius*2)
         {
             posX -= cueball.posData.radius;
             shifted = true;
@@ -289,7 +291,7 @@ void Level::render_head()
 
 void Level::recenter_cue()
 {
-    cue.setPos(cueball.posData.pos_x + cueball.posData.radius, cueball.posData.pos_y - cue.getHeight()/2);
+    cue.setPos(cueball.posData.pos[0] + cueball.posData.radius, cueball.posData.pos[1] - cue.getHeight()/2);
 }
 
 void Level::change_state()
@@ -351,10 +353,10 @@ void Level::check_balls_off_table(bool cur_turn)
         if (ball_off_table(b))
         {
             auto pos = get_safe_pos();
-            b.posData.pos_x = pos.first;
-            b.posData.pos_y = pos.second;
-            b.movData.speed_x = 0.0;
-            b.movData.speed_y = 0.0;
+            b.posData.pos[0] = pos.first;
+            b.posData.pos[1] = pos.second;
+            b.movData.speed[0] = 0.0;
+            b.movData.speed[1] = 0.0;
 
             player1turn = !cur_turn;
             message("Ball fell off the table", 2000);
@@ -519,8 +521,8 @@ void Level::shoot(double speed)
 
     double angle = (cue.getAngle() * PI) / 180.0;
 
-    cueball.movData.speed_y = -1 * std::sin(angle) * speed;
-    cueball.movData.speed_x = -1 * std::cos(angle) * speed;
+    cueball.movData.speed[1] = -1 * std::sin(angle) * speed;
+    cueball.movData.speed[0] = -1 * std::cos(angle) * speed;
 
     cueball.notify(Event::SUBJECT_CUE_COLLIDED);
     move_was_made = true;

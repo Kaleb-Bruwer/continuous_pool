@@ -79,12 +79,12 @@ void Rect::render()
 void Rect::move()
 {
     // Update position
-    rect.x += movData.speed_x;
-    rect.y += movData.speed_y;
+    rect.x += movData.speed[0];
+    rect.y += movData.speed[1];
 
     // Update Speed
-    movData.speed_x += movData.accel_x;
-    movData.speed_y += movData.accel_y;
+    movData.speed[0] += movData.accel[0];
+    movData.speed[1] += movData.accel[1];
 
     // Notify event
     notify(Event::SUBJECT_MOVED);
@@ -100,8 +100,8 @@ void Rect::setShape(int x, int y, int w, int h)
 
 void Rect::setSpeed(double spx, double spy, double acx, double acy) noexcept
 {
-    movData.speed_x = spx;
-    movData.speed_y = spy;
-    movData.accel_x = acx;
-    movData.accel_y = acy;
+    movData.speed[0] = spx;
+    movData.speed[1] = spy;
+    movData.accel[0] = acx;
+    movData.accel[1] = acy;
 }

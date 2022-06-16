@@ -3,10 +3,10 @@
 
 #include "subject.h"
 #include "texture.h"
+#include "vec.h"
 
 struct Circle {
-    double pos_x;
-    double pos_y;
+    vec2d pos;
     double radius;
 };
 

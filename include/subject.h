@@ -2,13 +2,12 @@
 #define SUBJECT_H
 
 #include "observer.h"
+#include "vec.h"
 #include <vector>
 
 struct MovementData {
-    double speed_x;
-    double speed_y;
-    double accel_x;
-    double accel_y;
+    vec2d speed;
+    vec2d accel;
 };
 
 class Subject {
