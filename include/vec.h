@@ -8,6 +8,12 @@ class vec{
 public:
     T val[dims];
 
+    // subscript operator, both versions are needed so it can be used within const funcs
+    const T& operator[](const int index) const
+        {return val[index];};
+    T& operator[](const int index)
+        {return val[index];};
+
     // an int vec would also return double for magnitude
     double magnitude() const{
         double total = 0;
@@ -25,10 +31,13 @@ public:
         return true;
     };
 
-    const T& operator[](const int index) const
-        {return val[index];};
-    T& operator[](const int index)
-        {return val[index];};
+    vec<T, dims> dot(const vec<T,dims> rhs) const{
+        vec<T, dims> result;
+        for(int i=0; i<dims; i++){
+            result[i] = val[i] * rhs[i];
+        }
+        return result;
+    }
 };
 
 template <class T, unsigned int dims>
@@ -42,13 +51,18 @@ vec<T, dims> operator+(const vec<T,dims> lhs, const vec<T,dims> rhs){
 };
 
 template <class T, unsigned int dims>
-vec<T, dims> operator*(const vec<T,dims> lhs, double rhs){
+vec<T, dims> operator*(const vec<T,dims> lhs, const double rhs){
     vec<T, dims> result;
     for(int i=0; i<dims; i++){
         result.val[i] = lhs.val[i] * rhs;
     }
 
     return result;
+};
+
+template <class T, unsigned int dims>
+vec<T, dims> operator*(const double lhs, const vec<T,dims> rhs){
+    return rhs * lhs;
 };
 
 template <class T, unsigned int dims>
