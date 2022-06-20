@@ -2,6 +2,7 @@
 #define VEC2_H
 
 #include <cmath>
+#include <cstring>
 
 template <class T, unsigned int dims>
 class vec{
@@ -38,6 +39,26 @@ public:
         }
         return result;
     }
+
+    void operator+=(const vec<T,dims> rhs){
+        for(int i=0; i<dims; i++){
+            val[i] += rhs[i];
+        }
+    }
+    void operator-=(const vec<T,dims> rhs){
+        for(int i=0; i<dims; i++){
+            val[i] -= rhs[i];
+        }
+    }
+
+    vec<T,dims>& operator=(const vec<T,dims>& rhs){
+        if(this == &rhs)
+            return *this;
+
+        memcpy(&val, &rhs.val, sizeof(val));
+        return *this;
+    }
+
 };
 
 template <class T, unsigned int dims>
@@ -76,5 +97,6 @@ vec<T, dims> operator-(const vec<T,dims> lhs, const vec<T,dims> rhs){
 }
 
 typedef vec<double, 2> vec2d;
+typedef vec<int, 2> vec2i;
 
 #endif

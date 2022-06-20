@@ -36,6 +36,7 @@ set(SOURCES
 
     src/quartic.cpp
     src/collision.cpp
+    src/matrix.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
