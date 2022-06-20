@@ -5,6 +5,11 @@
 
 #include <SDL.h>
 
+struct Line{
+    vec2d p1;
+    vec2d p2;
+};
+
 class Rect : public Subject {
     SDL_Color border, inside;
     bool solid;
@@ -13,6 +18,7 @@ class Rect : public Subject {
 public:
     MovementData movData {0.0, 0.0, 0.0, 0.0};
     SDL_Rect rect;
+    Line line;
     bool visible = true;
 
     Rect();
