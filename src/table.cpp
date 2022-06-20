@@ -16,19 +16,29 @@ Table::Table(CollisionObserver* c)
 
     // Left and right colliders
     r[0].setShape(posX-3, posY+60, 40, 252);
-    r[1].setShape(posX + static_cast<int>(background.getWidth()) - 37, posY+62, 40, 249);
+    r[0].line = Line{posX + 37, posY+60, posX + 37, posY + 312};
+    int temp = posX + static_cast<int>(background.getWidth()) - 37;
+    r[1].setShape(temp, posY+62, 40, 249);
+    r[1].line = Line{temp, posY+62, temp, posY + 311};
     r[0].addObserver(c);
     r[1].addObserver(c);
 
     // Up and down 1
     r[2].setShape(posX + 61, posY-5, 268, 40);
-    r[3].setShape(posX+59, posY + static_cast<int>(background.getHeight()) - 37, 268, 40);
+    r[2].line = Line{posX + 61, posY + 35, posX + 329, posY + 35};
+    temp = posY + static_cast<int>(background.getHeight()) - 37;
+    r[3].setShape(posX+59, temp, 268, 40);
+    r[3].line = Line{posX + 59, temp, posX + 327, temp};
+
     r[2].addObserver(c);
     r[3].addObserver(c);
 
     // Up and down 2
     r[4].setShape(posX + 371, posY-5, 269, 40);
-    r[5].setShape(posX + 371, posY + static_cast<int>(background.getHeight()) - 37, 269, 40);
+    r[4].line = Line{posX + 371, posY+35, posX + 640, posY + 35};
+    temp = posY + static_cast<int>(background.getHeight()) - 37;
+    r[5].setShape(posX + 371, temp, 269, 40);
+    r[5].line = Line{posX + 371, temp, posX + 640,temp};
     r[4].addObserver(c);
     r[5].addObserver(c);
 
