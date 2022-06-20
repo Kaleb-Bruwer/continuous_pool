@@ -36,6 +36,7 @@ public:
     RotMatrix2d(double angle);
 
     void set_from_angle(double angle);
+    void set_from_vec(vec2d);
 };
 
 #endif

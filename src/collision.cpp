@@ -131,6 +131,23 @@ void applyCollision(Ball& b1, Ball& b2, double time){
     b2.append_path(time, b2_pos, b2_vel, &b1);
 }
 
+void applyCollision(Ball& b, const Line l, double time){
+    vec2d pos = b.pos_from_path(time);
+    vec2d vel = b.vel_from_path(time);
+
+    // flip velocity around line
+    vec2d rotation = l.p2 - l.p1;
+    RotMatrix2d rot(rotation);
+    vel = vel * rot;
+    vel[1] = -vel[1];
+
+    rotation[1] = -rotation[1];
+    rot.set_from_vec(rotation);
+    vel = vel * rot;
+
+    b.append_path(time, pos, vel, 0);
+}
+
 
 // https://www.plasmaphysics.org.uk/programs/coll2d_cpp.htm
 void collision2Ds(double m1, double m2, double R,
