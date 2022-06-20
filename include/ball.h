@@ -23,6 +23,8 @@ struct Path{
     double time_start = 0;
     double time_end = -1;
     Subject* collider = 0;
+
+    bool time_overlap(const Path rhs);
 };
 
 class Ball : public Subject  {
@@ -48,6 +50,9 @@ public:
 
     virtual void   move() override;
     virtual void render() override;
+
+    virtual double next_collision(Ball* b);
+
 
     bool is_moving() const noexcept;
 

@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "level.h"
+#include "collision.h"
 
 Ball::Ball()
     : texture{},
@@ -73,6 +74,51 @@ void Ball::render()
     texture.render(static_cast<int>(posData.pos[0] - posData.radius),
                    static_cast<int>(posData.pos[1] - posData.radius));
 }
+
+bool Path::time_overlap(const Path rhs){
+    if(time_end == -1)
+        return rhs.time_end == -1 || rhs.time_end > time_start;
+    if(rhs.time_end == -1)
+        return time_end > rhs.time_start;
+
+    return time_end > rhs.time_start && time_start < rhs.time_end;
+}
+
+
+double Ball::next_collision(Ball* b){
+    // Go through both balls' path & check (time) overlaps chronologically
+    int step_l = 0;
+    int step_r = 0;
+
+    double result = -1;
+
+    //  .........|XX....|.....
+    //  ....|.....XX|.........
+    // Check for temporal overlap
+    while(true){
+        if(step_l >= path.size()
+        || step_r >= b->path.size())
+            break;
+
+        Path& lhs = path[step_l];
+        Path& rhs = b->path[step_r];
+
+        if(lhs.time_overlap(rhs)){
+            result = _next_collision(lhs, posData.radius, rhs, b->posData.radius);
+            if(result != -1) // 1st solution is the valid one
+                return result;
+        }
+        else{
+            if(lhs.time_end <= rhs.time_start)
+                step_l++;
+            else
+                step_r++;
+        }
+
+    }
+    return result;
+}
+
 
 // TODO: update to get speed from path instead
 bool Ball::is_moving() const noexcept

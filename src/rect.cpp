@@ -1,6 +1,9 @@
 #include "rect.h"
+
 #include "mainwindow.h"
 #include "exception.h"
+#include "ball.h"
+#include "collision.h"
 
 Rect::Rect()
     : Rect(0, 0, 0, 0)
@@ -89,6 +92,16 @@ void Rect::move()
     // Notify event
     notify(Event::SUBJECT_MOVED);
 }
+
+double Rect::next_collision(Ball* b){
+    double result;
+    for(Path &p : b->path){
+        result = _next_collision(p, b->posData.radius, line);
+        if(result != -1)
+            return result;
+    }
+}
+
 
 void Rect::setShape(int x, int y, int w, int h)
 {

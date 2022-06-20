@@ -10,6 +10,8 @@ struct MovementData {
     vec2d accel;
 };
 
+class Ball;
+
 class Subject {
     std::vector<Observer*> observers_;
 public:
@@ -21,6 +23,8 @@ public:
 
     virtual void render() = 0;
     virtual void move() = 0;
+
+    virtual double next_collision(Ball* b) = 0;
 };
 
 #endif // SUBJECT_H

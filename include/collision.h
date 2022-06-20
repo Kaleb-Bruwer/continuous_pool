@@ -2,8 +2,7 @@
 #define COLLISION_H
 
 #include "rect.h"
-
-class Ball;
+#include "ball.h"
 
 // single contact (sqrt term is 0) is ignored
 // all solutions <= 0 are ignored
@@ -11,7 +10,7 @@ class Ball;
 double quadratic_next(double a, double b, double c);
 
 // returns time until contact between given balls, -1 if they won't touch
-double next_collision(Ball* b1, Ball* b2);
-double next_collision(Ball* b, Line l);
+double _next_collision(const Path p1, double r1, const Path p2, double r2);
+double _next_collision(const Path p, double r, Line l);
 
 #endif

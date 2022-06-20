@@ -37,6 +37,8 @@ public:
     virtual void render() override;
     virtual void move() override;
 
+    virtual double next_collision(Ball* b);
+
     void setShape(int x, int y, int w, int h);
     void setSpeed(double spx, double spy, double acx = 0.0, double acy = 0.0) noexcept;
     void setBorder(const SDL_Color& c) {border = c;}

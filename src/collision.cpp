@@ -11,12 +11,14 @@ using namespace std;
 
 #define sq(a) pow(a,2)
 
-double next_collision(Ball* b1, Ball* b2){
-    vec2d pos = b1->posData.pos - b2->posData.pos;
-    vec2d speed = b1->movData.speed - b2->movData.speed;
-    vec2d accel = b1->movData.accel - b2->movData.accel;
+// Path and radius
+double _next_collision(const Path p1, double r1, const Path p2, double r2){
 
-    double min_dist = b1->posData.radius + b2->posData.radius;
+    vec2d pos = p1.pos_0 - p2.pos_0;
+    vec2d speed = p1.vel_0 - p2.vel_0;
+    vec2d accel = p1.accel - p2.accel;
+
+    double min_dist = r1 + r2;
 
     // Keep in mind that this doesn't have to be repeated every tick
 
@@ -47,10 +49,10 @@ double next_collision(Ball* b1, Ball* b2){
     return next_coll;
 }
 
-double next_collision(Ball* b, Line l){
-    vec2d pos = b->posData.pos;
-    vec2d speed = b->movData.speed;
-    vec2d accel = b->movData.accel;
+double _next_collision(const Path path, double r, Line l){
+    vec2d pos = path.pos_0;
+    vec2d speed = path.vel_0;
+    vec2d accel = path.accel;
 
     pos -= l.p1;
     l.p2 -= l.p1;
@@ -67,12 +69,12 @@ double next_collision(Ball* b, Line l){
     // if y>=0, -r
 
     if(pos[1] < 0){
-        pos[1] += b->posData.radius;
+        pos[1] += r;
         if(pos[1] >= 0)
             return 0;
     }
     else{
-        pos[1] -= b->posData.radius;
+        pos[1] -= r;
         if(pos[1] <= 0)
             return 0;
     }
