@@ -7,7 +7,7 @@
 template <class T, unsigned int dims>
 class vec{
 public:
-    T val[dims];
+    T val[dims] = {};
 
     // subscript operator, both versions are needed so it can be used within const funcs
     const T& operator[](const int index) const

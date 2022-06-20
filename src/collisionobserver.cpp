@@ -2,6 +2,7 @@
 #include "rect.h"
 #include "ball.h"
 #include "subject.h"
+#include "level.h"
 
 #include <cmath>
 
@@ -9,8 +10,8 @@ CollisionObserver::CollisionObserver() {}
 
 void CollisionObserver::onNotify(Subject& entity, Event event)
 {
-    if (event == Event::SUBJECT_MOVED)
-        checkCollisions(dynamic_cast<Ball*>(&entity));
+    // if (event == Event::SUBJECT_MOVED)
+    //     checkCollisions(dynamic_cast<Ball*>(&entity));
 }
 
 double CollisionObserver::distanceSquared(double x1, double y1, double x2, double y2)
@@ -43,43 +44,20 @@ void CollisionObserver::checkCollisions(Ball* b)
 {
     if (b == nullptr) return;
 
+    Subject* target = 0;
+    double coll_time = -1;
+    double curr_time = Level::get_time();
+
     for (Subject* sub: observed_)
     {
-        Ball* b2 = dynamic_cast<Ball*>(sub);
-        if (b2 != nullptr)
-        {
-            if (b2 != b)
-            {
-                if (collided(b, b2))
-                {
-                    // std::cout << "2 balls collided!" << std::endl;
-                    fix(b, b2);
-
-                    if (b2->id == 999) // Side of the pocket
-                        b->notify(Event::SUBJECT_WALL_COLLIDED);
-                    else // Other ball
-                        b->notify(Event::SUBJECT_BALL_COLLIDED);
-
-                    // Set first_hit
-                    if (first_hit == -1 && b2->id != 999)
-                        first_hit = b2->id;
-                }
-            }
-        }
-        else
-        {
-            Rect* r = dynamic_cast<Rect*>(sub);
-            if (r != nullptr)
-            {
-                if (collided(b, r))
-                {
-                    // std::cout << "Collided with wall!!" << std::endl;
-                    fix(b, r);
-                    b->notify(Event::SUBJECT_WALL_COLLIDED);
-                }
-            }
+        double t = sub->next_collision(b);
+        if(t != -1 && t > curr_time && t < coll_time){
+            coll_time = t;
+            target = sub;
         }
     }
+
+    // Apply collision
 }
 
 // Find closest point on collision box

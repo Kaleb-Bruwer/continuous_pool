@@ -9,8 +9,15 @@
 // if no valid solutions, return -1
 double quadratic_next(double a, double b, double c);
 
+void collision2Ds(double m1, double m2, double R,
+                  double x1, double y1, double x2, double y2,
+                  double& vx1, double& vy1, double& vx2, double& vy2);
+
 // returns time until contact between given balls, -1 if they won't touch
 double _next_collision(const Path p1, double r1, const Path p2, double r2);
 double _next_collision(const Path p, double r, Line l);
+
+void applyCollision(Ball& b1, Ball& b2, double time);
+void applyCollision(Ball& b, const Line l, double time);
 
 #endif

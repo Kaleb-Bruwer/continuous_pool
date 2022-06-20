@@ -2,6 +2,7 @@
 #define BALL_H
 
 #include <vector>
+#include <tuple>
 
 #include "subject.h"
 #include "texture.h"
@@ -16,15 +17,20 @@ struct Circle {
 // with a new struct after every collision/stop
 
 // time_start is taken as time 0 within pos and vel, accel is constant
+const double friction = 0.4;
+
 struct Path{
     vec2d pos_0;
     vec2d vel_0;
     vec2d accel;
     double time_start = 0;
     double time_end = -1;
-    Subject* collider = 0;
+    Subject* collider = 0; // for collision at start of Path, not end
 
     bool time_overlap(const Path rhs);
+
+    // Sets accel to properly apply friction and time_end to when motion will stop
+    void apply_friction();
 };
 
 class Ball : public Subject  {
@@ -46,7 +52,20 @@ public:
     void setPos(double px, double py);
     void setVel(double sx, double sy);
 
+    Path& get_curr_path(double t);
+
     vec2d pos_from_path();
+    vec2d vel_from_path();
+    vec2d accel_from_path();
+
+    vec2d pos_from_path(double t);
+    vec2d vel_from_path(double t);
+    vec2d accel_from_path(double t);
+
+    // Also applies friction logic to path
+    // return: balls that need to be re-checked from specified times
+    std::vector<std::tuple<double, Subject*>> append_path(
+        double time, vec2d pos, vec2d vel, Subject* collider);
 
     virtual void   move() override;
     virtual void render() override;

@@ -111,6 +111,27 @@ double quadratic_next(double a, double b, double c){
     return -1;
 }
 
+void applyCollision(Ball& b1, Ball& b2, double time){
+    double combined_r = b1.posData.radius + b2.posData.radius;
+
+    // Get next path section's info
+    vec2d b1_pos = b1.pos_from_path(time);
+    vec2d b1_vel = b1.vel_from_path(time);
+
+    vec2d b2_pos = b2.pos_from_path(time);
+    vec2d b2_vel = b2.vel_from_path(time);
+    // vec2d b1_accel = b1.accel_from_path(time);
+
+    collision2Ds(b1.mass, b2.mass, combined_r,
+        b1_pos[0], b1_pos[1], b2_pos[0], b2_pos[1],
+        b1_vel[0], b1_vel[1], b2_vel[0], b2_vel[1]);
+
+    // Create next path section
+    b1.append_path(time, b1_pos, b1_vel, &b2);
+    b2.append_path(time, b2_pos, b2_vel, &b1);
+}
+
+
 // https://www.plasmaphysics.org.uk/programs/coll2d_cpp.htm
 void collision2Ds(double m1, double m2, double R,
                   double x1, double y1, double x2, double y2,
