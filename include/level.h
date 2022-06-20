@@ -44,7 +44,7 @@ public:
     virtual void logic() override;
     virtual void render() override;
 
-    static double getTime(){return time;};
+    static double get_time(){return time;};
 
 private:
     void handle_when_still(SDL_Event& e);

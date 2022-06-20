@@ -44,20 +44,22 @@ void Level::logic()
 {
     moving_state = false;
 
-    for (auto& b: balls)
-        if (b.is_moving())
-        {
-            moving_state = true;
-            b.move();
-            check_pocket(b);
-        }
 
-    if (cueball.is_moving())
-    {
-        moving_state = true;
-        cueball.move();
-        check_pocket(cueball);
-    }
+
+    // for (auto& b: balls)
+    //     if (b.is_moving())
+    //     {
+    //         moving_state = true;
+    //         b.move();
+    //         check_pocket(b);
+    //     }
+    //
+    // if (cueball.is_moving())
+    // {
+    //     moving_state = true;
+    //     cueball.move();
+    //     check_pocket(cueball);
+    // }
 
 
     if (!moving_state) // Check player moves and state changes
