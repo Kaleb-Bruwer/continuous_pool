@@ -1,12 +1,18 @@
 #include "collisionobserver.h"
+
 #include "rect.h"
 #include "ball.h"
 #include "subject.h"
 #include "level.h"
+#include "collision.h"
 
 #include <cmath>
 
 CollisionObserver::CollisionObserver() {}
+
+void CollisionObserver::populateSearchTable(){
+    searchTable.populate(observed_);
+}
 
 void CollisionObserver::onNotify(Subject& entity, Event event)
 {
@@ -37,27 +43,6 @@ bool CollisionObserver::collided(Ball* b, Rect* r)
     auto closer = find_closer(b, r);
 
     return distanceSquared(closer.first, closer.second, b->posData.pos[0], b->posData.pos[1]) < b->posData.radius * b->posData.radius;
-}
-
-// Check collision of this Ball* b with every subject watched
-void CollisionObserver::checkCollisions(Ball* b)
-{
-    if (b == nullptr) return;
-
-    Subject* target = 0;
-    double coll_time = -1;
-    double curr_time = Level::get_time();
-
-    for (Subject* sub: observed_)
-    {
-        double t = sub->next_collision(b);
-        if(t != -1 && t > curr_time && t < coll_time){
-            coll_time = t;
-            target = sub;
-        }
-    }
-
-    // Apply collision
 }
 
 // Find closest point on collision box

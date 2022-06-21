@@ -8,6 +8,9 @@
 #include "texture.h"
 #include "vec.h"
 
+typedef std::vector<std::tuple<double, Subject*>> invalids;
+const double friction = 0.4;
+
 struct Circle {
     vec2d pos;
     double radius;
@@ -17,7 +20,6 @@ struct Circle {
 // with a new struct after every collision/stop
 
 // time_start is taken as time 0 within pos and vel, accel is constant
-const double friction = 0.4;
 
 struct Path{
     vec2d pos_0;
@@ -64,8 +66,7 @@ public:
 
     // Also applies friction logic to path
     // return: balls that need to be re-checked from specified times
-    std::vector<std::tuple<double, Subject*>> append_path(
-        double time, vec2d pos, vec2d vel, Subject* collider);
+    invalids append_path(double time, vec2d pos, vec2d vel, Subject* collider);
 
     virtual void   move() override;
     virtual void render() override;

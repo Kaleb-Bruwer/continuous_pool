@@ -81,10 +81,9 @@ vec2d Ball::accel_from_path(double t){
     return get_curr_path(t).accel;
 }
 
-vector<tuple<double, Subject*>> Ball::append_path
-        (double time, vec2d pos, vec2d vel, Subject* collider){
+invalids Ball::append_path(double time, vec2d pos, vec2d vel, Subject* collider){
     // future collisions that have been destroyed by this one
-    vector<tuple<double, Subject*>> cancelled;
+    invalids cancelled;
 
     Path p;
     p.time_start = time;
@@ -103,7 +102,8 @@ vector<tuple<double, Subject*>> Ball::append_path
 
     if(i + 1 < path.size()){
         for(int j=i+1; j< path.size(); j++)
-            cancelled.push_back(make_tuple(path[j].time_start, path[j].collider));
+            if(path[j].collider)
+                cancelled.push_back(make_tuple(path[j].time_start, path[j].collider));
         path.erase(path.begin() + i + 1, path.end());
     }
 

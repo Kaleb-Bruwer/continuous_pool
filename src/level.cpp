@@ -25,6 +25,7 @@ Level::Level()
 
     create_balls();
     create_cue_ball();
+    collobserver.populateSearchTable();
 }
 
 void Level::handle_events()

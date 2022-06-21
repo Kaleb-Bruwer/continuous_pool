@@ -17,7 +17,9 @@ void collision2Ds(double m1, double m2, double R,
 double _next_collision(const Path p1, double r1, const Path p2, double r2);
 double _next_collision(const Path p, double r, Line l);
 
-void applyCollision(Ball& b1, Ball& b2, double time);
-void applyCollision(Ball& b, const Line l, double time);
+invalids apply_collision(Ball& b1, Subject* s, double time);
+
+invalids apply_collision(Ball& b1, Ball& b2, double time);
+invalids apply_collision(Ball& b, const Line l, double time);
 
 #endif

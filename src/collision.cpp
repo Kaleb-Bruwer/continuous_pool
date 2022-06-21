@@ -111,7 +111,18 @@ double quadratic_next(double a, double b, double c){
     return -1;
 }
 
-void applyCollision(Ball& b1, Ball& b2, double time){
+invalids apply_collision(Ball& b1, Subject* s, double time){
+    Ball* b2 = dynamic_cast<Ball*>(s);
+    if(b2)
+        return apply_collision(b1, *b2, time);
+
+    Rect* r = dynamic_cast<Rect*>(s);
+    if(r)
+        return apply_collision(b1, r->line, time);
+}
+
+
+invalids apply_collision(Ball& b1, Ball& b2, double time){
     double combined_r = b1.posData.radius + b2.posData.radius;
 
     // Get next path section's info
@@ -127,11 +138,14 @@ void applyCollision(Ball& b1, Ball& b2, double time){
         b1_vel[0], b1_vel[1], b2_vel[0], b2_vel[1]);
 
     // Create next path section
-    b1.append_path(time, b1_pos, b1_vel, &b2);
-    b2.append_path(time, b2_pos, b2_vel, &b1);
+    invalids cancelled = b1.append_path(time, b1_pos, b1_vel, &b2);
+    invalids temp = b2.append_path(time, b2_pos, b2_vel, &b1);
+
+    cancelled.insert(cancelled.end(), temp.begin(), temp.end());
+    return cancelled;
 }
 
-void applyCollision(Ball& b, const Line l, double time){
+invalids apply_collision(Ball& b, const Line l, double time){
     vec2d pos = b.pos_from_path(time);
     vec2d vel = b.vel_from_path(time);
 
@@ -145,7 +159,7 @@ void applyCollision(Ball& b, const Line l, double time){
     rot.set_from_vec(rotation);
     vel = vel * rot;
 
-    b.append_path(time, pos, vel, 0);
+    return b.append_path(time, pos, vel, 0);
 }
 
 
