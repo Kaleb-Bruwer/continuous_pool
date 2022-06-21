@@ -35,7 +35,8 @@ class Level : public GameState {
     int team_color = 0; // 0 = undefined, 1 = player1 kills solid, 2 = player1 kills stripes
     bool mouse_pressed = false;
 
-    static double time;
+    static int tick; //time = ticks / 60
+    double checked_time = 0;
 
 public:
     Level();
@@ -44,7 +45,7 @@ public:
     virtual void logic() override;
     virtual void render() override;
 
-    static double get_time(){return time;};
+    static double get_time(){return tick / 60.0;};
 
 private:
     void handle_when_still(SDL_Event& e);

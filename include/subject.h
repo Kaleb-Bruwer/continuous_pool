@@ -24,7 +24,7 @@ public:
     virtual void render() = 0;
     virtual void move() = 0;
 
-    virtual double next_collision(Ball* b) = 0;
+    virtual double next_collision(Ball* b, double start) = 0;
 };
 
 #endif // SUBJECT_H

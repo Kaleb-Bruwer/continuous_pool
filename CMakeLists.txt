@@ -45,9 +45,9 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
 target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
         $<$<CONFIG:Debug>:
-            -O0 -Wall -Wextra -Weffc++ -Werror -pedantic-errors -g>
+            -O0 -g>
         $<$<CONFIG:Release>:
-            -O3 -Wall -pipe -march=native>>
+            -O3 -pipe -march=native>>
     $<$<CXX_COMPILER_ID:MSVC>:
         $<$<CONFIG:Debug>:/Od /Wall /Zi>>
 )

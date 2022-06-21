@@ -93,11 +93,14 @@ void Rect::move()
     notify(Event::SUBJECT_MOVED);
 }
 
-double Rect::next_collision(Ball* b){
+double Rect::next_collision(Ball* b, double start){
     double result;
     for(Path &p : b->path){
+        if(p.time_end <= start)
+            continue;
+
         result = _next_collision(p, b->posData.radius, line);
-        if(result != -1)
+        if(result != -1 && result > start)
             return result;
     }
 }

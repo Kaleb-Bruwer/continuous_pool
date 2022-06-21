@@ -66,7 +66,7 @@ double SearchTable::global_time_safe() const{
     double result = DBL_MAX;
 
     for(int r=0; r<11; r++){
-        for(int c=0; c<23; c++){
+        for(int c=r+1; c<35; c++){
             result = min(result, time_safe[r][c]);
         }
     }
@@ -74,40 +74,49 @@ double SearchTable::global_time_safe() const{
 }
 
 void SearchTable::check_until(double until){
-    // iterate over balls
-    for(int b=0; b<11; b++){
+    bool flag = true;
+    while(flag){
+        flag = false;
+        cout << "Performing SearchTable pass\n";
+        // iterate over balls
+        for(int b=0; b<11; b++){
 
-        // Find target
-        double next_coll = DBL_MAX;
-        int coll_index = -1;
-        for(int s=0; s<35; s++){
-            if(b == s || time_safe[b][s] >= until)
-                continue;
+            // Find target
+            double next_coll = DBL_MAX;
+            int coll_index = -1;
+            for(int s=b+1; s<35; s++){
+                cout << "Checking " << b << ", " << s << endl;
+                if(time_safe[b][s] >= until)
+                    continue;
+                flag = true;
+                Subject* sub = (s < 11) ? balls[s] : non_balls[s-11];
 
-            Subject* sub = (s < 11) ? balls[s] : non_balls[s-11];
+                double coll = sub->next_collision(balls[b], time_safe[b][s]);
+                // if coll != -1, then time_safe WILL be overwritten later
+                if(coll == -1)
+                    time_safe[b][s] = DBL_MAX;
+                else if(coll < next_coll){
+                    next_coll = coll;
+                    coll_index = s;
+                }
+            }
 
-            double coll = sub->next_collision(balls[b]);
-            if(coll != -1 && coll < next_coll){
-                next_coll = coll;
-                coll_index = s;
+            // Perform collision (if needed)
+            if(coll_index != -1){
+                // Any future collisions laid out for involved objects are dropped
+                invalids cancelled;
+                if(coll_index < 11)
+                    cancelled = apply_collision(*balls[b], *balls[coll_index], next_coll);
+                else
+                    cancelled = apply_collision(*balls[b], non_balls[coll_index - 11], next_coll);
+
+                set_index_time(b, next_coll);
+                set_index_time(coll_index, next_coll);
+
+                for(tuple<double, Subject*>& can : cancelled){
+                    set_index_max_time(get_index(get<1>(can)), get<0>(can));
+                }
             }
         }
-
-        // Perform collision (if needed)
-        if(coll_index != -1){
-            invalids cancelled;
-            if(coll_index < 11)
-                cancelled = apply_collision(*balls[b], *balls[coll_index], next_coll);
-            else
-                cancelled = apply_collision(*balls[b], non_balls[coll_index - 11], next_coll);
-
-            set_index_time(b, next_coll);
-            set_index_time(coll_index, next_coll);
-
-            for(tuple<double, Subject*>& can : cancelled){
-                set_index_max_time(get_index(get<1>(can)), get<0>(can));
-            }
-        }
-
     }
 }

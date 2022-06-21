@@ -1,6 +1,7 @@
 #include "ball.h"
 
 #include <cmath>
+#include <iostream>
 
 #include "level.h"
 #include "collision.h"
@@ -83,8 +84,6 @@ vec2d Ball::accel_from_path(double t){
 
 invalids Ball::append_path(double time, vec2d pos, vec2d vel, Subject* collider){
     // future collisions that have been destroyed by this one
-    invalids cancelled;
-
     Path p;
     p.time_start = time;
     p.pos_0 = pos;
@@ -100,25 +99,51 @@ invalids Ball::append_path(double time, vec2d pos, vec2d vel, Subject* collider)
             continue;
     }
 
-    if(i + 1 < path.size()){
-        for(int j=i+1; j< path.size(); j++)
-            if(path[j].collider)
-                cancelled.push_back(make_tuple(path[j].time_start, path[j].collider));
-        path.erase(path.begin() + i + 1, path.end());
-    }
-
     path[i].time_end = time;
-    path.push_back(p);
-
-    Path cap;
-    cap.time_start = p.time_end;
-    cap.time_end = -1;
-    cap.pos_0 = pos_from_path(p.time_end);
-    path.push_back(cap);
-
-    return cancelled;
+    // prune_path also applies fricion and caps off the path
+    return prune_path(time);
 }
 
+invalids Ball::prune_path(double time){
+    int i;
+    for(i=0; i<path.size(); i++){
+        if(path[i].time_start > time && path[i].collider)
+            break;
+    }
+
+    if(i == path.size()){
+        return {};
+    }
+
+    invalids result;
+    int index = i;
+    for(; i<path.size(); i++){
+        if(path[i].collider){
+            Ball* b = dynamic_cast<Ball*>(path[i].collider);
+            if(b)
+                result.push_back(make_tuple(path[i].time_start, path[i].collider));
+        }
+    }
+
+    path.erase(path.begin() + index, path.end());
+    for(int j=0; j<result.size(); j++){
+        invalids temp = ((Ball*)get<1>(result[i]))->prune_path(get<0>(result[i]));
+        result.insert(result.end(), temp.begin(), temp.end());
+    }
+
+    Path& last = path[path.size() - 1];
+    if(last.time_end != -1){
+        last.apply_friction();
+
+        Path cap;
+        cap.time_start = last.time_end;
+        cap.time_end = -1;
+        cap.pos_0 = pos_from_path(last.time_end);
+        path.push_back(cap);
+    }
+
+    return result;
+}
 
 void Ball::move()
 {
@@ -152,7 +177,22 @@ void Path::apply_friction(){
     time_end = time_start + dt;
 };
 
-double Ball::next_collision(Ball* b){
+vec2d Path::pos(double t) const{
+    if(t == time_start)
+        return pos_0;
+    t -= time_start;
+    return pos_0 + vel_0 * t + 0.5 * accel * t * t;
+}
+
+vec2d Path::vel(double t) const{
+    if(t == time_start)
+        return vel_0;
+    t -= time_start;
+    return vel_0  + accel * t;
+}
+
+
+double Ball::next_collision(Ball* b, double start){
     // Go through both balls' path & check (time) overlaps chronologically
     int step_l = 0;
     int step_r = 0;
@@ -165,25 +205,22 @@ double Ball::next_collision(Ball* b){
     while(true){
         if(step_l >= path.size()
         || step_r >= b->path.size())
-            break;
+            return result;
 
         Path& lhs = path[step_l];
         Path& rhs = b->path[step_r];
 
         if(lhs.time_overlap(rhs)){
             result = _next_collision(lhs, posData.radius, rhs, b->posData.radius);
-            if(result != -1) // 1st solution is the valid one
+            if(result != -1 && result > start) // 1st solution is the valid one
                 return result;
         }
-        else{
-            if(lhs.time_end <= rhs.time_start)
-                step_l++;
-            else
-                step_r++;
-        }
 
+        if(lhs.time_end <= rhs.time_start)
+            step_l++;
+        else
+            step_r++;
     }
-    return result;
 }
 
 

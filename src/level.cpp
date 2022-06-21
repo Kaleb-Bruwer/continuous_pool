@@ -4,11 +4,12 @@
 #include <algorithm>
 #include <cmath>
 #include <string>
+#include <iostream>
 
 #include <SDL.h>
 
 const double PI = std::atan(1) * 4;
-double Level::time = 0;
+int Level::tick = 0;
 
 
 Level::Level()
@@ -43,24 +44,31 @@ void Level::handle_events()
 
 void Level::logic()
 {
+    tick++;
+    if(checked_time <= get_time()){
+        std::cout << "Pre check_all_collisions\n";
+        collobserver.check_all_collisions(get_time() + 1);
+        std::cout << "Post check_all_collisions\n";
+
+        checked_time = collobserver.global_time_safe();
+    }
+
     moving_state = false;
 
+    for (auto& b: balls)
+        if (b.is_moving())
+        {
+            moving_state = true;
+            b.move();
+            check_pocket(b);
+        }
 
-
-    // for (auto& b: balls)
-    //     if (b.is_moving())
-    //     {
-    //         moving_state = true;
-    //         b.move();
-    //         check_pocket(b);
-    //     }
-    //
-    // if (cueball.is_moving())
-    // {
-    //     moving_state = true;
-    //     cueball.move();
-    //     check_pocket(cueball);
-    // }
+    if (cueball.is_moving())
+    {
+        moving_state = true;
+        cueball.move();
+        check_pocket(cueball);
+    }
 
 
     if (!moving_state) // Check player moves and state changes

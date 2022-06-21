@@ -13,12 +13,25 @@ using namespace std;
 
 // Path and radius
 double _next_collision(const Path p1, double r1, const Path p2, double r2){
+    // Pick latest time_start between paths
+    // get  pos & vel at that time
+    double start = max(p1.time_start, p2.time_start);
+    double end1 = (p1.time_end == -1) ? DBL_MAX : p1.time_end;
+    double end2 = (p2.time_end == -1) ? DBL_MAX : p2.time_end;
 
-    vec2d pos = p1.pos_0 - p2.pos_0;
-    vec2d speed = p1.vel_0 - p2.vel_0;
+    double end = min(end1, end2);
+
+    vec2d pos = p1.pos(start) - p2.pos(start);
+    vec2d speed = p1.vel(start) - p2.vel(start);
     vec2d accel = p1.accel - p2.accel;
 
     double min_dist = r1 + r2;
+
+    // No relative movement -> either continuous contact or no collision
+    //      1st case would break whole algorithm
+    //      2nd case just a computational waste
+    if(speed.is_zero() && accel.is_zero())
+        return -1;
 
     // Keep in mind that this doesn't have to be repeated every tick
 
@@ -43,8 +56,10 @@ double _next_collision(const Path p1, double r1, const Path p2, double r2){
     }
     delete [] solutions;
 
-    if(next_coll == DBL_MAX)
+    if(next_coll == DBL_MAX || next_coll + start > end)
         next_coll = -1;
+    else
+        next_coll += start;
 
     return next_coll;
 }
@@ -53,6 +68,9 @@ double _next_collision(const Path path, double r, Line l){
     vec2d pos = path.pos_0;
     vec2d speed = path.vel_0;
     vec2d accel = path.accel;
+
+    if(speed.is_zero() && accel.is_zero())
+        return -1;
 
     pos -= l.p1;
     l.p2 -= l.p1;
@@ -80,14 +98,14 @@ double _next_collision(const Path path, double r, Line l){
     }
 
     double t = quadratic_next(0.5*accel[1], speed[1], pos[1]);
-    if(t == -1)
+    if(t == -1 || t + path.time_start > path.time_end)
         return -1;
 
     double x = pos[0] + speed[0] * t + 0.5 * t*t * accel[0];
     if(x < 0 || x > l.p2.magnitude())
         return -1;
 
-    return t;
+    return t + path.time_start;
 }
 
 double quadratic_next(double a, double b, double c){

@@ -33,6 +33,9 @@ struct Path{
 
     // Sets accel to properly apply friction and time_end to when motion will stop
     void apply_friction();
+
+    vec2d pos(double t) const;
+    vec2d vel(double t) const;
 };
 
 class Ball : public Subject  {
@@ -67,11 +70,12 @@ public:
     // Also applies friction logic to path
     // return: balls that need to be re-checked from specified times
     invalids append_path(double time, vec2d pos, vec2d vel, Subject* collider);
+    invalids prune_path(double time);
 
     virtual void   move() override;
     virtual void render() override;
 
-    virtual double next_collision(Ball* b);
+    virtual double next_collision(Ball* b, double start);
 
 
     bool is_moving() const noexcept;
