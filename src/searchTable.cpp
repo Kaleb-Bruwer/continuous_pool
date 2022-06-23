@@ -75,9 +75,15 @@ double SearchTable::global_time_safe() const{
 
 void SearchTable::check_until(double until){
     bool flag = true;
+    unsigned int passes = 0;
     while(flag){
+        passes++;
+        if(passes == 10){
+            cout << "10th\n";
+        }
+
         flag = false;
-        cout << "Performing SearchTable pass\n";
+        // cout << "Performing SearchTable pass\n";
         // iterate over balls
         for(int b=0; b<11; b++){
 
@@ -85,7 +91,6 @@ void SearchTable::check_until(double until){
             double next_coll = DBL_MAX;
             int coll_index = -1;
             for(int s=b+1; s<35; s++){
-                cout << "Checking " << b << ", " << s << endl;
                 if(time_safe[b][s] >= until)
                     continue;
                 flag = true;
@@ -93,7 +98,7 @@ void SearchTable::check_until(double until){
 
                 double coll = sub->next_collision(balls[b], time_safe[b][s]);
                 // if coll != -1, then time_safe WILL be overwritten later
-                if(coll == -1)
+                if(coll == -1 || coll == DBL_MAX)
                     time_safe[b][s] = DBL_MAX;
                 else if(coll < next_coll){
                     next_coll = coll;
@@ -101,7 +106,7 @@ void SearchTable::check_until(double until){
                 }
             }
 
-            // Perform collision (if needed)
+            // Perform collision (if needed)|
             if(coll_index != -1){
                 // Any future collisions laid out for involved objects are dropped
                 invalids cancelled;

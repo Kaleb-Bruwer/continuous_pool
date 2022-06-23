@@ -94,15 +94,20 @@ void Rect::move()
 }
 
 double Rect::next_collision(Ball* b, double start){
-    double result;
+    double result = -1;
     for(Path &p : b->path){
         if(p.time_end <= start)
             continue;
+
+        if(p.pocketed)
+            return -1;
 
         result = _next_collision(p, b->posData.radius, line);
         if(result != -1 && result > start)
             return result;
     }
+
+    return result;
 }
 
 

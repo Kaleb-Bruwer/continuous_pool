@@ -4,6 +4,7 @@
 #include "texture.h"
 #include "rect.h"
 #include "ball.h"
+#include "pocket.h"
 
 class CollisionObserver; // Forward declare
 
@@ -13,6 +14,7 @@ class Table {
     Rect r[6] {};  // Rect colliders for walls
     Ball b[12] {}; // Ball colliders to simulate pocket sides
     SDL_Point pocket_sensors[6] {}; // Check if ball in the pocket
+    Pocket p[6] {};
 
 public:
     Table(CollisionObserver* c = nullptr);

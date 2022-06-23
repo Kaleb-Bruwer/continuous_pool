@@ -91,7 +91,7 @@ invalids Ball::append_path(double time, Path newCap){
         invalids result = prune_path(time);
 
         if(newCap.pocketed){
-            path.push_back(newCap);            
+            path.push_back(newCap);
         }
         else{
             path[i].time_end = time;
@@ -237,6 +237,9 @@ double Ball::next_collision(Ball* b, double start){
         Path& rhs = b->path[step_r];
 
         if(lhs.time_overlap(rhs)){
+            if(lhs.pocketed || rhs.pocketed)
+                return -1;
+
             result = _next_collision(lhs, posData.radius, rhs, b->posData.radius);
             if(result != -1 && result > start) // 1st solution is the valid one
                 return result;

@@ -79,6 +79,12 @@ Table::Table(CollisionObserver* c)
     pocket_sensors[4].y = posY + 25;
     pocket_sensors[5].x = posX + static_cast<int>(background.getWidth()/2); // Bottom middle
     pocket_sensors[5].y = posY - 23 + static_cast<int>(background.getHeight());
+
+    for(int i=0; i<6; i++){
+        p[i].pos = {pocket_sensors[i].x, pocket_sensors[i].y};
+        p[i].addObserver(c);
+    }
+
 }
 
 void Table::render()

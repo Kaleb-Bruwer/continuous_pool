@@ -10,6 +10,9 @@ double Pocket::next_collision(Ball* b, double start){
         if(p.time_end <= start && p.time_end != -1)
             continue;
 
+        if(p.pocketed)
+            return -1;
+
         Path p2 = p;
         p2.pos_0 = pos;
         p2.vel_0 = vec2d{0,0};

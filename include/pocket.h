@@ -9,6 +9,9 @@ public:
     vec2d pos;
     virtual double next_collision(Ball* b, double start);
 
+    virtual void render(){};
+    virtual void move(){};
+
 };
 
 #endif
