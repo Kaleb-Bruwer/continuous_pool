@@ -38,6 +38,7 @@ set(SOURCES
     src/collision.cpp
     src/matrix.cpp
     src/searchTable.cpp
+    src/pocket.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

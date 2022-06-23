@@ -29,10 +29,13 @@ struct Path{
     double time_end = -1;
     Subject* collider = 0; // for collision at start of Path, not end
 
+    bool pocketed = false;
+
     bool time_overlap(const Path rhs);
 
     // Sets accel to properly apply friction and time_end to when motion will stop
-    void apply_friction();
+    // returns a "cap" path for indefinite stationary state after friction ended
+    Path apply_friction();
 
     vec2d pos(double t) const;
     vec2d vel(double t) const;
@@ -40,6 +43,9 @@ struct Path{
 
 class Ball : public Subject  {
     Texture texture;
+
+    void friction_cap_path();
+    invalids remove_duplicate_invalids(const invalids& in) const;
 public:
     bool is_movable = true;
     bool is_visible = true;
@@ -69,7 +75,7 @@ public:
 
     // Also applies friction logic to path
     // return: balls that need to be re-checked from specified times
-    invalids append_path(double time, vec2d pos, vec2d vel, Subject* collider);
+    invalids append_path(double time, Path newCap);
     invalids prune_path(double time);
 
     virtual void   move() override;

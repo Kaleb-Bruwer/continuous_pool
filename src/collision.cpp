@@ -137,6 +137,10 @@ invalids apply_collision(Ball& b1, Subject* s, double time){
     Rect* r = dynamic_cast<Rect*>(s);
     if(r)
         return apply_collision(b1, r->line, time);
+    Pocket *p = dynamic_cast<Pocket*>(s);
+    if(p)
+        return apply_collision(b1, *p, time);
+
 }
 
 
@@ -156,10 +160,38 @@ invalids apply_collision(Ball& b1, Ball& b2, double time){
         b1_vel[0], b1_vel[1], b2_vel[0], b2_vel[1]);
 
     // Create next path section
-    invalids cancelled = b1.append_path(time, b1_pos, b1_vel, &b2);
-    invalids temp = b2.append_path(time, b2_pos, b2_vel, &b1);
+    // friction will be applied within append_path()
+    Path p1;
+    p1.time_start = time;
+    p1.pos_0 = b1_pos;
+    p1.vel_0 = b1_vel;
+    p1.collider = &b2;
 
-    cancelled.insert(cancelled.end(), temp.begin(), temp.end());
+    invalids cancelled = b1.append_path(time, p1);
+
+    Path p2;
+    p2.time_start = time;
+    p2.pos_0 = b2_pos;
+    p2.vel_0 = b2_vel;
+    p2.collider = &b1;
+
+    invalids temp = b2.append_path(time, p2);
+
+    // Combine invalids from the two
+    for(const tuple<double, Subject*>& elem : temp){
+        bool found = false;
+        for(int i=0; i<cancelled.size(); i++){
+            tuple<double, Subject*>& r = cancelled[i];
+            if(get<1>(elem) == get<1>(r)){
+                found = true;
+                get<0>(r) = min(get<0>(r), get<0>(elem));
+                break;
+            }
+        }
+        if(!found){
+            cancelled.push_back(elem);
+        }
+    }
     return cancelled;
 }
 
@@ -177,7 +209,21 @@ invalids apply_collision(Ball& b, const Line l, double time){
     rot.set_from_vec(rotation);
     vel = vel * rot;
 
-    return b.append_path(time, pos, vel, 0);
+    // friction will be applied within append_path
+    Path newP;
+    newP.time_start = time;
+    newP.pos_0 = pos;
+    newP.vel_0 = vel;
+
+    return b.append_path(time, newP);
+}
+
+invalids apply_collision(Ball& b, const Pocket &p, double time){
+    Path newP;
+    newP.time_start = time;
+    newP.pocketed = true;
+
+    return b.append_path(time, newP);
 }
 
 

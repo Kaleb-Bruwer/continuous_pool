@@ -82,38 +82,43 @@ vec2d Ball::accel_from_path(double t){
     return get_curr_path(t).accel;
 }
 
-invalids Ball::append_path(double time, vec2d pos, vec2d vel, Subject* collider){
-    // future collisions that have been destroyed by this one
-    Path p;
-    p.time_start = time;
-    p.pos_0 = pos;
-    p.vel_0 = vel;
-    p.collider = collider;
-
-    p.apply_friction();
-
-    int i;
-    for(i=0; i<path.size(); i++){
+invalids Ball::append_path(double time, Path newCap){
+    for(int i=0; i<path.size(); i++){
         double t_end = path[i].time_end;
         if(t_end < time && t_end != -1)
             continue;
-    }
 
-    path[i].time_end = time;
-    // prune_path also applies fricion and caps off the path
-    return prune_path(time);
+        invalids result = prune_path(time);
+
+        if(newCap.pocketed){
+            path.push_back(newCap);            
+        }
+        else{
+            path[i].time_end = time;
+            Path cap = newCap.apply_friction();
+            path.push_back(newCap);
+            path.push_back(cap);
+        }
+
+
+        result = remove_duplicate_invalids(result);
+
+        for(tuple<double, Subject*>& elem : result){
+            Ball* b = dynamic_cast<Ball*>(get<1>(elem));
+            if(b)
+                b->friction_cap_path();
+        }
+        return result;
+    }
+    return {};
 }
 
 invalids Ball::prune_path(double time){
     int i;
-    for(i=0; i<path.size(); i++){
-        if(path[i].time_start > time && path[i].collider)
-            break;
-    }
+    for(i=0; i < path.size() && path[i].time_start < time; i++){}
 
-    if(i == path.size()){
+    if(i == path.size())
         return {};
-    }
 
     invalids result;
     int index = i;
@@ -131,19 +136,13 @@ invalids Ball::prune_path(double time){
         result.insert(result.end(), temp.begin(), temp.end());
     }
 
-    Path& last = path[path.size() - 1];
-    if(last.time_end != -1){
-        last.apply_friction();
-
-        Path cap;
-        cap.time_start = last.time_end;
-        cap.time_end = -1;
-        cap.pos_0 = pos_from_path(last.time_end);
-        path.push_back(cap);
-    }
-
     return result;
 }
+
+void Ball::friction_cap_path(){
+    path.push_back(path[path.size()].apply_friction());
+}
+
 
 void Ball::move()
 {
@@ -167,7 +166,7 @@ bool Path::time_overlap(const Path rhs){
     return time_end > rhs.time_start && time_start < rhs.time_end;
 }
 
-void Path::apply_friction(){
+Path Path::apply_friction(){
     double v = vel_0.magnitude();
 
     accel[0] = (friction * vel_0[0]) / v;
@@ -175,6 +174,13 @@ void Path::apply_friction(){
 
     double dt = v/friction;
     time_end = time_start + dt;
+
+    Path cap;
+    cap.time_start = time_end;
+    cap.time_end = -1;
+    cap.pos_0 = pos(time_end);
+
+    return cap;
 };
 
 vec2d Path::pos(double t) const{
@@ -189,6 +195,26 @@ vec2d Path::vel(double t) const{
         return vel_0;
     t -= time_start;
     return vel_0  + accel * t;
+}
+
+invalids Ball::remove_duplicate_invalids(const invalids& in) const{
+    invalids result;
+
+    for(const tuple<double, Subject*>& elem : in){
+        bool found = false;
+        for(int i=0; i<result.size(); i++){
+            tuple<double, Subject*>& r = result[i];
+            if(get<1>(elem) == get<1>(r)){
+                found = true;
+                get<0>(r) = min(get<0>(r), get<0>(elem));
+                break;
+            }
+        }
+        if(!found){
+            result.push_back(elem);
+        }
+    }
+    return result;
 }
 
 

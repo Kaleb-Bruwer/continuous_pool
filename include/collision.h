@@ -3,6 +3,7 @@
 
 #include "rect.h"
 #include "ball.h"
+#include "pocket.h"
 
 // single contact (sqrt term is 0) is ignored
 // all solutions <= 0 are ignored
@@ -21,5 +22,6 @@ invalids apply_collision(Ball& b1, Subject* s, double time);
 
 invalids apply_collision(Ball& b1, Ball& b2, double time);
 invalids apply_collision(Ball& b, const Line l, double time);
+invalids apply_collision(Ball& b, const Pocket &p, double time);
 
 #endif
