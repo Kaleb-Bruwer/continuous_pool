@@ -31,54 +31,85 @@ void Ball::setTex(const std::string& path)
 
 void Ball::setPos(double px, double py)
 {
-    posData.pos[0] = px;
-    posData.pos[1] = py;
+    vec2d pos{px, py};
+    posData.pos = pos;
+
+    Path p;
+    p.pos_0 = pos;
+    p.time_start = Level::get_time();
+    p.time_end = -1;
+
+    path.clear();
+    path.push_back(p);
+
+    notify(Event::SUBJECT_TIME_RESET);
 }
 
-void Ball::setVel(double sx, double sy)
-{
-    movData.speed[0] = sx;
-    movData.speed[1] = sy;
+void Ball::setVel(vec2d vel){
+    double t = Level::get_time();
+
+    Path p;
+    p.pos_0 = pos_from_path(t);
+    p.vel_0 = vel;
+    p.time_start = t;
+    Path cap = p.apply_friction();
+
+    path.clear();
+    path.push_back(p);
+    path.push_back(cap);
+
+    notify(Event::SUBJECT_TIME_RESET);
 }
 
 Path& Ball::get_curr_path(double t){
     for(int i=0; i<path.size(); i++){
         double t_end = path[i].time_end;
         if(t_end < t && t_end != -1)
-            continue;
+        continue;
         return path[i];
     }
     return path[path.size()-1];
 }
 
-
-vec2d Ball::pos_from_path(){
-        pos_from_path(Level::get_time());
+const Path& Ball::get_curr_path(double t) const{
+    for(int i=0; i<path.size(); i++){
+        double t_end = path[i].time_end;
+        if(t_end < t && t_end != -1)
+        continue;
+        return path[i];
+    }
+    return path[path.size()-1];
 }
 
-vec2d Ball::pos_from_path(double t){
+vec2d Ball::pos_from_path() const{
+        return pos_from_path(Level::get_time());
+}
+
+vec2d Ball::pos_from_path(double t) const{
     Path curr_p = get_curr_path(t);
 
     double t_delta = t - curr_p.time_start;
-    return curr_p.pos_0 + curr_p.vel_0 * t_delta
-        + 0.5 * pow(t_delta, 2) * curr_p.accel;
+    vec2d result = curr_p.pos_0 + (curr_p.vel_0 * t_delta)
+        + ((0.5 * pow(t_delta, 2)) * curr_p.accel);
+
+    return result;
 }
 
-vec2d Ball::vel_from_path(){
+vec2d Ball::vel_from_path() const{
     return vel_from_path(Level::get_time());
 }
 
-vec2d Ball::vel_from_path(double t){
+vec2d Ball::vel_from_path(double t) const{
     Path curr_p = get_curr_path(t);
 
     double t_delta = t - curr_p.time_start;
     return curr_p.vel_0 + t_delta * curr_p.accel;
 }
 
-vec2d Ball::accel_from_path(){
+vec2d Ball::accel_from_path() const{
     return accel_from_path(Level::get_time());
 }
-vec2d Ball::accel_from_path(double t){
+vec2d Ball::accel_from_path(double t) const{
     return get_curr_path(t).accel;
 }
 
@@ -169,8 +200,8 @@ bool Path::time_overlap(const Path rhs){
 Path Path::apply_friction(){
     double v = vel_0.magnitude();
 
-    accel[0] = (friction * vel_0[0]) / v;
-    accel[1] = (friction * vel_0[1]) / v;
+    accel[0] = -(friction * vel_0[0]) / v;
+    accel[1] = -(friction * vel_0[1]) / v;
 
     double dt = v/friction;
     time_end = time_start + dt;
@@ -252,9 +283,7 @@ double Ball::next_collision(Ball* b, double start){
     }
 }
 
-
-// TODO: update to get speed from path instead
 bool Ball::is_moving() const noexcept
 {
-    return is_movable && !movData.speed.is_zero();
+    return is_movable && !vel_from_path().is_zero() && !accel_from_path().is_zero();
 }

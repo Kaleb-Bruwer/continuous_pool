@@ -10,14 +10,18 @@
 
 CollisionObserver::CollisionObserver() {}
 
-void CollisionObserver::populateSearchTable(){
-    searchTable.populate(observed_);
+void CollisionObserver::populateSearchTable(Ball* cueball){
+    searchTable.populate(observed_, cueball);
 }
 
 void CollisionObserver::onNotify(Subject& entity, Event event)
 {
     // if (event == Event::SUBJECT_MOVED)
     //     checkCollisions(dynamic_cast<Ball*>(&entity));
+
+    if(event == Event::SUBJECT_TIME_RESET){
+        searchTable.set_subject_time(&entity, Level::get_time());
+    }
 }
 
 double CollisionObserver::distanceSquared(double x1, double y1, double x2, double y2)

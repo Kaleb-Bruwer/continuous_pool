@@ -61,17 +61,19 @@ public:
 
     void setTex(const std::string& path);
     void setPos(double px, double py);
-    void setVel(double sx, double sy);
+    void setVel(double sx, double sy){setVel(vec2d{sx, sy});};
+    void setVel(vec2d);
 
     Path& get_curr_path(double t);
+    const Path& get_curr_path(double t) const;
 
-    vec2d pos_from_path();
-    vec2d vel_from_path();
-    vec2d accel_from_path();
+    vec2d pos_from_path() const;
+    vec2d vel_from_path() const;
+    vec2d accel_from_path() const;
 
-    vec2d pos_from_path(double t);
-    vec2d vel_from_path(double t);
-    vec2d accel_from_path(double t);
+    vec2d pos_from_path(double t) const;
+    vec2d vel_from_path(double t) const;
+    vec2d accel_from_path(double t) const;
 
     // Also applies friction logic to path
     // return: balls that need to be re-checked from specified times

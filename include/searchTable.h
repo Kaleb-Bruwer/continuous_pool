@@ -3,20 +3,27 @@
 
 #include <vector>
 
+#include "vec.h"
+
 class Subject;
 class Ball;
 
 // Balls are the only moving objects, hence the distinction
 
 class SearchTable{
+public:
+    static const int NUM_BALLS = 16;
+    static const int NUM_NON_BALLS = 24;
 private:
-    Ball* balls[11] = {0};
-    Subject* non_balls[24] = {0};
+    int cueball_index = -1;
+
+    Ball* balls[NUM_BALLS] = {0};
+    Subject* non_balls[NUM_NON_BALLS] = {0};
 
     // Balls * (Balls, non_balls)
     // time_safe is the time up to which all collisions between these 2 objects
     // have been checked
-    double time_safe[11][35];
+    double time_safe[NUM_BALLS][NUM_BALLS + NUM_NON_BALLS];
 
     void set_index_time(int index, double t);
     void set_index_max_time(int index, double t);
@@ -24,11 +31,14 @@ private:
     int get_index(Subject* s);
 
 public:
-    void populate(const std::vector<Subject*>& subjects);
+    void populate(const std::vector<Subject*>& subjects, Ball* cueball);
 
     void check_until(double until);
     double global_time_safe() const;
 
+    void applyCue(vec2d vel, double time = -1);
+
+    void set_subject_time(Subject* s, double t);
 };
 
 #endif

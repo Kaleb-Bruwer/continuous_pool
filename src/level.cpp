@@ -26,7 +26,7 @@ Level::Level()
 
     create_balls();
     create_cue_ball();
-    collobserver.populateSearchTable();
+    collobserver.populateSearchTable(&cueball);
 }
 
 void Level::handle_events()
@@ -45,12 +45,16 @@ void Level::handle_events()
 void Level::logic()
 {
     tick++;
-    if(checked_time <= get_time()){
+    if(collobserver.global_time_safe() <= get_time()){
         std::cout << "Pre check_all_collisions\n";
         collobserver.check_all_collisions(get_time() + 1);
         std::cout << "Post check_all_collisions\n";
 
         checked_time = collobserver.global_time_safe();
+    }
+
+    if(tick % 20 == 0){
+        std::cout << "Cueball: " << cueball.posData.pos[0] << ", " << cueball.posData.pos[1] << std::endl;
     }
 
     moving_state = false;
@@ -532,8 +536,8 @@ void Level::shoot(double speed)
 
     double angle = (cue.getAngle() * PI) / 180.0;
 
-    cueball.movData.speed[1] = -1 * std::sin(angle) * speed;
-    cueball.movData.speed[0] = -1 * std::cos(angle) * speed;
+    vec2d vel{-1 * std::sin(angle) * speed, -1 * std::cos(angle) * speed};
+    cueball.setVel(vel);
 
     cueball.notify(Event::SUBJECT_CUE_COLLIDED);
     move_was_made = true;

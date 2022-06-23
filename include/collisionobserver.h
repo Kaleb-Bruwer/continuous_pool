@@ -23,8 +23,7 @@ public:
     void check_all_collisions(double until){
         searchTable.check_until(until);
     };
-    void populateSearchTable();
-
+    void populateSearchTable(Ball* cueball);
 private:
     SearchTable searchTable;
 
