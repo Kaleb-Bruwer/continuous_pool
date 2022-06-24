@@ -536,7 +536,8 @@ void Level::shoot(double speed)
 
     double angle = (cue.getAngle() * PI) / 180.0;
 
-    vec2d vel{-1 * std::sin(angle) * speed, -1 * std::cos(angle) * speed};
+    vec2d vel{-1 * std::cos(angle) * speed, -1 * std::sin(angle) * speed};
+    vel = vel * 6;
     cueball.setVel(vel);
 
     cueball.notify(Event::SUBJECT_CUE_COLLIDED);

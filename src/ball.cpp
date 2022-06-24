@@ -163,7 +163,7 @@ invalids Ball::prune_path(double time){
 
     path.erase(path.begin() + index, path.end());
     for(int j=0; j<result.size(); j++){
-        invalids temp = ((Ball*)get<1>(result[i]))->prune_path(get<0>(result[i]));
+        invalids temp = ((Ball*)get<1>(result[j]))->prune_path(get<0>(result[j]));
         result.insert(result.end(), temp.begin(), temp.end());
     }
 
