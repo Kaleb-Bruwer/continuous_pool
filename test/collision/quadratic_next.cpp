@@ -31,7 +31,7 @@ INSTANTIATE_TEST_CASE_P(TC_quadratic_next, T_quadratic_next,
     ::testing::Values(
         std::make_tuple(0,0,0, -1), //flat line
 
-        std::make_tuple(1,0,0, -1), //root is 0
+        std::make_tuple(1,0,0, 0), //root is 0
 
         std::make_tuple(0.5,-1,0.5, 1), //single positive root
         std::make_tuple(0.75,-1.5,0.75, 1),
@@ -43,7 +43,7 @@ INSTANTIATE_TEST_CASE_P(TC_quadratic_next, T_quadratic_next,
 
         std::make_tuple(1,1.5,0.5625, -1), //single negative root
 
-        std::make_tuple(1,-1.5,-1, 2), //multiple roots
+        std::make_tuple(1,-1.5,-1, -1), //multiple roots
         std::make_tuple(1,-2.3,0.6, 0.3)
 
 

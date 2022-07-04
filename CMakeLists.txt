@@ -16,6 +16,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_BUILD_TYPE Debug)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -54,6 +55,7 @@ set(SOURCES
 
 set(TEST_SOURCES
     test/collision/quadratic_next.cpp
+    test/collision/next_collision_balls.cpp
 )
 
 add_executable(${PROJECT_NAME} src/main.cpp ${SOURCES})
@@ -74,9 +76,9 @@ target_link_libraries(${PROJECT_NAME}
                       ${SDL2_MIXER_LIBRARIES}
 )
 
-add_executable(tests ${SOURCES} ${TEST_SOURCES})
+add_executable(test ${SOURCES} ${TEST_SOURCES})
 
-target_link_libraries(  tests
+target_link_libraries(  test
                         gtest_main
                         ${SDL2_LIBRARY}
                         ${SDL2_IMAGE_LIBRARIES}

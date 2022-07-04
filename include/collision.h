@@ -10,6 +10,10 @@
 // if no valid solutions, return -1
 double quadratic_next(double a, double b, double c);
 
+// checks if derivative of distance is negative
+// a to d are terms of a polymorphic equation of t
+bool moving_towards(double a, double b, double c, double d, double t);
+
 void collision2Ds(double m1, double m2, double R,
                   double x1, double y1, double x2, double y2,
                   double& vx1, double& vy1, double& vx2, double& vy2);

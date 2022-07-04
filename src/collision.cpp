@@ -19,6 +19,10 @@ double _next_collision(const Path p1, double r1, const Path p2, double r2){
     double end1 = (p1.time_end == -1) ? DBL_MAX : p1.time_end;
     double end2 = (p2.time_end == -1) ? DBL_MAX : p2.time_end;
 
+    if(p1.time_start > end2 ||
+            p2.time_start > end1)
+        return -1;
+
     double end = min(end1, end2);
 
     vec2d pos = p1.pos(start) - p2.pos(start);
@@ -28,40 +32,52 @@ double _next_collision(const Path p1, double r1, const Path p2, double r2){
     double min_dist = r1 + r2;
 
     // No relative movement -> either continuous contact or no collision
-    //      1st case would break whole algorithm
-    //      2nd case just a computational waste
+    // either way, no use continuing
     if(speed.is_zero() && accel.is_zero())
         return -1;
 
-    // Keep in mind that this doesn't have to be repeated every tick
+    if(accel.is_zero()){
+        double c = sq(speed[0]) + sq(speed[1]); //t^^2
+        double d = 2 * pos[0] * speed[0] + 2 * pos[1] * speed[1]; //t^^1
+        double e = sq(pos[0]) + sq(pos[1]) - sq(min_dist); ////t^^0
 
-    double a = 0.5 * (sq(accel[0]) + sq(accel[1]));
-    double b = accel[0] * speed[0] + accel[1] * speed[1];
-    double c = accel[0] * pos[0] + accel[1] * pos[1]
-            + sq(speed[0]) + sq(speed[1]);
-    double d = 2 * pos[0] * speed[0] + 2 * pos[1] * speed[1];
-    double e = sq(pos[0]) + sq(pos[1]) - min_dist*min_dist;
+        double t = quadratic_next(c, d, e);
+        if(t == -1 || t + start > end)
+            return -1;
+        if(moving_towards(0, 0, c, d, t))
+            return start + t;
+        else
+            return -1;
 
-    // solve_quartic solves quartic equations of the form x^4 + a*x^3 + b*x^2 + c*x + d
-    // so every parameter must be divided by a to scale 1st term to 1
-    DComplex* solutions = solve_quartic(b/a, c/a, d/a, e/a);
-
-    double next_coll = DBL_MAX;
-
-    for(int i=0; i<4; i++){
-        if(solutions[i].imag() != 0)
-            continue;
-        if(solutions[i].real() > 0 && solutions[i].real() < next_coll)
-            next_coll = solutions[i].real();
     }
-    delete [] solutions;
+    else{
+        // Keep in mind that this doesn't have to be repeated every tick
+        double a = 0.25 * (sq(accel[0]) + sq(accel[1]));
+        double b = accel[0] * speed[0] + accel[1] * speed[1];
+        double c = accel[0] * pos[0] + accel[1] * pos[1]
+                + sq(speed[0]) + sq(speed[1]);
+        double d = 2 * pos[0] * speed[0] + 2 * pos[1] * speed[1];
+        double e = sq(pos[0]) + sq(pos[1]) - sq(min_dist);
 
-    if(next_coll == DBL_MAX || next_coll + start > end)
-        next_coll = -1;
-    else
-        next_coll += start;
+        // solve_quartic solves quartic equations of the form x^4 + a*x^3 + b*x^2 + c*x + d
+        // so every parameter must be divided by a to scale 1st term to 1
+        DComplex* solutions = solve_quartic(b/a, c/a, d/a, e/a);
 
-    return next_coll;
+        double next_coll = DBL_MAX;
+
+        for(int i=0; i<4; i++){
+            if(solutions[i].imag() != 0)
+                continue;
+            double temp = solutions[i].real();
+            if(temp >= 0 && temp < next_coll && moving_towards(a, b, c, d, temp))
+                next_coll = temp;
+        }
+        delete [] solutions;
+
+        if(next_coll == DBL_MAX || next_coll + start > end)
+            return -1;
+        return next_coll + start;
+    }
 }
 
 double _next_collision(const Path path, double r, Line l){
@@ -119,15 +135,27 @@ double quadratic_next(double a, double b, double c){
 
 
     result = (-b - sqrtTerm)/(2*a);
-    if(result > 0)
+    if(result >= 0)
         return result;
 
-    result = (-b + sqrtTerm)/(2*a);
-    if(result > 0)
-        return result;
+    // 2nd root cannot be the solution since it will always be away-moving
+    // distance formula always has non-negative 'a' term ('c' in parent func; vel squared)
+
+    // result = (-b + sqrtTerm)/(2*a);
+    // if(result >= 0)
+    //     return result;
 
     return -1;
 }
+
+bool moving_towards(double a, double b, double c, double d, double t){
+    double result   = 3  * a * t*t*t
+                    + 3  * b * t*t
+                    + 2  * c * t
+                    + 1  * d;
+    return (result < 0);
+}
+
 
 invalids apply_collision(Ball& b1, Subject* s, double time){
     Ball* b2 = dynamic_cast<Ball*>(s);
