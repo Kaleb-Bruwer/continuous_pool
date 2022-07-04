@@ -15,6 +15,19 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include"
                      ${SDL2_MIXER_INCLUDE_DIRS}
 )
 
+# GoogleTest requires at least C++14
+set(CMAKE_CXX_STANDARD 14)
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+
 set(SOURCES
     src/main.cpp
     src/exception.cpp
@@ -41,6 +54,10 @@ set(SOURCES
     src/pocket.cpp
 )
 
+set(TEST_SOURCES
+    test/hello.cpp
+)
+
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
 target_compile_options(${PROJECT_NAME} PRIVATE
@@ -59,6 +76,10 @@ target_link_libraries(${PROJECT_NAME}
                       ${SDL2_TTF_LIBRARIES}
                       ${SDL2_MIXER_LIBRARIES}
 )
+
+add_executable(tests ${TEST_SOURCES})
+
+target_link_libraries(tests gtest_main)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
