@@ -109,10 +109,10 @@ double _next_collision(const Path path, double r, Line l){
 }
 
 double quadratic_next(double a, double b, double c){
-    double result;
+    double result = 0;
 
-    double sqrtTerm = b*b + 4*a*c;
-    if(sqrtTerm <= 0)
+    double sqrtTerm = b*b - 4*a*c;
+    if(sqrtTerm < 0)
         return -1;
 
     sqrtTerm = sqrt(sqrtTerm);

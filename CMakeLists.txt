@@ -15,8 +15,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include"
                      ${SDL2_MIXER_INCLUDE_DIRS}
 )
 
-# GoogleTest requires at least C++14
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -29,7 +28,6 @@ FetchContent_MakeAvailable(googletest)
 
 
 set(SOURCES
-    src/main.cpp
     src/exception.cpp
     src/mainwindow.cpp
     src/texture.cpp
@@ -55,11 +53,10 @@ set(SOURCES
 )
 
 set(TEST_SOURCES
-    test/hello.cpp
+    test/collision/quadratic_next.cpp
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES})
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
+add_executable(${PROJECT_NAME} src/main.cpp ${SOURCES})
 target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
         $<$<CONFIG:Debug>:
@@ -77,9 +74,15 @@ target_link_libraries(${PROJECT_NAME}
                       ${SDL2_MIXER_LIBRARIES}
 )
 
-add_executable(tests ${TEST_SOURCES})
+add_executable(tests ${SOURCES} ${TEST_SOURCES})
 
-target_link_libraries(tests gtest_main)
+target_link_libraries(  tests
+                        gtest_main
+                        ${SDL2_LIBRARY}
+                        ${SDL2_IMAGE_LIBRARIES}
+                        ${SDL2_TTF_LIBRARIES}
+                        ${SDL2_MIXER_LIBRARIES}
+)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
