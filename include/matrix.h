@@ -18,11 +18,15 @@ public:
 };
 
 template<class T, unsigned int X, unsigned int Y>
-vec<T,Y> operator*(const vec<T,Y> lhs, const Matrix<T,X,Y> rhs){
-    vec<T,Y> result;
+vec<T,X> operator*(const vec<T,Y> lhs, const Matrix<T,X,Y> rhs){
+    vec<T,X> result;
+
     for(int i=0; i<X; i++){
-        vec<T,Y> temp = lhs.dot(rhs.val[i]);
-        result = result + temp;
+        T temp = 0;
+
+        for(int j=0; j<Y; j++)
+            temp += lhs[j] * rhs.at(i,j);
+        result[i] = temp;
     }
     return result;
 };

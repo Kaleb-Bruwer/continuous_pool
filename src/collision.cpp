@@ -114,7 +114,7 @@ double _next_collision(const Path path, double r, Line l){
     }
 
     double t = quadratic_next(0.5*accel[1], speed[1], pos[1]);
-    if(t == -1 || t + path.time_start > path.time_end)
+    if(t == -1 || (path.time_end != -1 && t + path.time_start > path.time_end))
         return -1;
 
     double x = pos[0] + speed[0] * t + 0.5 * t*t * accel[0];
@@ -126,25 +126,23 @@ double _next_collision(const Path path, double r, Line l){
 
 double quadratic_next(double a, double b, double c){
     double result = 0;
+    if(a == 0){
+        result = -c/b;
+    }
+    else{
+        double sqrtTerm = b*b - 4*a*c;
+        if(sqrtTerm < 0)
+            return -1;
 
-    double sqrtTerm = b*b - 4*a*c;
-    if(sqrtTerm < 0)
-        return -1;
+        sqrtTerm = sqrt(sqrtTerm);
 
-    sqrtTerm = sqrt(sqrtTerm);
+        result = (-b - sqrtTerm)/(2*a);
+        // 2nd root cannot be the solution since it will always be away-moving
+        // distance formula always has non-negative 'a' term ('c' in parent func; vel squared)
+    }
 
-
-    result = (-b - sqrtTerm)/(2*a);
     if(result >= 0)
         return result;
-
-    // 2nd root cannot be the solution since it will always be away-moving
-    // distance formula always has non-negative 'a' term ('c' in parent func; vel squared)
-
-    // result = (-b + sqrtTerm)/(2*a);
-    // if(result >= 0)
-    //     return result;
-
     return -1;
 }
 
