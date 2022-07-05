@@ -271,7 +271,7 @@ double Ball::next_collision(Ball* b, double start){
             if(lhs.pocketed || rhs.pocketed)
                 return -1;
 
-            result = _next_collision(lhs, posData.radius, rhs, b->posData.radius);
+            result = _next_collision(lhs, posData.radius, rhs, b->posData.radius, start);
             if(result != -1 && result > start) // 1st solution is the valid one
                 return result;
         }

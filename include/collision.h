@@ -19,8 +19,8 @@ void collision2Ds(double m1, double m2, double R,
                   double& vx1, double& vy1, double& vx2, double& vy2);
 
 // returns time until contact between given balls, -1 if they won't touch
-double _next_collision(const Path p1, double r1, const Path p2, double r2);
-double _next_collision(const Path p, double r, Line l);
+double _next_collision(const Path p1, double r1, const Path p2, double r2, double start);
+double _next_collision(const Path p, double r, Line l, double start);
 
 invalids apply_collision(Ball& b1, Subject* s, double time);
 

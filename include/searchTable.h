@@ -25,7 +25,6 @@ private:
     // have been checked
     double time_safe[NUM_BALLS][NUM_BALLS + NUM_NON_BALLS];
 
-    void set_index_time(int index, double t);
     void set_index_max_time(int index, double t);
 
     int get_index(Subject* s);

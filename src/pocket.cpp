@@ -18,7 +18,7 @@ double Pocket::next_collision(Ball* b, double start){
         p2.vel_0 = vec2d{0,0};
         p2.accel = vec2d{0,0};
 
-        result = _next_collision(p, b->posData.radius, p2, 0);
+        result = _next_collision(p, b->posData.radius, p2, 0, start);
         if(result != -1)
             return result;
     }

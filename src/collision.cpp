@@ -12,10 +12,11 @@ using namespace std;
 #define sq(a) pow(a,2)
 
 // Path and radius
-double _next_collision(const Path p1, double r1, const Path p2, double r2){
+double _next_collision(const Path p1, double r1, const Path p2, double r2, double _start){
     // Pick latest time_start between paths
     // get  pos & vel at that time
     double start = max(p1.time_start, p2.time_start);
+    start = max(start, _start);
     double end1 = (p1.time_end == -1) ? DBL_MAX : p1.time_end;
     double end2 = (p2.time_end == -1) ? DBL_MAX : p2.time_end;
 
@@ -74,16 +75,18 @@ double _next_collision(const Path p1, double r1, const Path p2, double r2){
         }
         delete [] solutions;
 
-        if(next_coll == DBL_MAX || next_coll + start > end)
+        if(next_coll == DBL_MAX || next_coll + start >= end)
             return -1;
         return next_coll + start;
     }
 }
 
-double _next_collision(const Path path, double r, Line l){
+double _next_collision(const Path path, double r, Line l, double start){
     vec2d pos = path.pos_0;
     vec2d speed = path.vel_0;
     vec2d accel = path.accel;
+
+    start = max(start, path.time_start);
 
     if(speed.is_zero() && accel.is_zero())
         return -1;
@@ -114,7 +117,7 @@ double _next_collision(const Path path, double r, Line l){
     }
 
     double t = quadratic_next(0.5*accel[1], speed[1], pos[1]);
-    if(t == -1 || (path.time_end != -1 && t + path.time_start > path.time_end))
+    if(t == -1 || t < start || (path.time_end != -1 && t + path.time_start >= path.time_end))
         return -1;
 
     double x = pos[0] + speed[0] * t + 0.5 * t*t * accel[0];

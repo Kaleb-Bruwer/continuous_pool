@@ -72,24 +72,13 @@ void SearchTable::set_subject_time(Subject* s, double t){
     }
 }
 
-
-void SearchTable::set_index_time(int index, double t){
-    if(index < NUM_BALLS){
-        for(int s=0; s<NUM_NON_BALLS; s++)
-            time_safe[index][s] = t;
-    }
-
-    for(int b=0; b<NUM_BALLS; b++)
-        time_safe[b][index] = t;
-}
-
 void SearchTable::set_index_max_time(int index, double t){
     if(index < NUM_BALLS){
-        for(int s=0; s<NUM_NON_BALLS; s++)
+        for(int s=index+1; s<NUM_NON_BALLS; s++)
             time_safe[index][s] = min(t, time_safe[index][s]);
     }
 
-    for(int b=0; b<NUM_BALLS; b++)
+    for(int b=0; b<NUM_BALLS && b < index; b++)
         time_safe[b][index] = min(t, time_safe[b][index]);
 }
 
@@ -103,7 +92,6 @@ int SearchTable::get_index(Subject* s){
             return i + NUM_BALLS;
     }
 }
-
 
 double SearchTable::global_time_safe() const{
     double result = DBL_MAX;
@@ -154,8 +142,8 @@ void SearchTable::check_until(double until){
                 else
                     cancelled = apply_collision(*balls[b], non_balls[coll_index - NUM_BALLS], next_coll);
 
-                set_index_time(b, next_coll);
-                set_index_time(coll_index, next_coll);
+                set_index_max_time(b, next_coll);
+                set_index_max_time(coll_index, next_coll);
 
                 for(tuple<double, Subject*>& can : cancelled){
                     set_index_max_time(get_index(get<1>(can)), get<0>(can));

@@ -20,7 +20,7 @@ public:
 };
 
 TEST_P(T_next_collision_balls, test_result){
-    double result = _next_collision(p1, radius, p2, 0);
+    double result = _next_collision(p1, radius, p2, 0, 0);
 
     // Can't make precise checks due to floating point errors
     double diff = fabs(result - expect);

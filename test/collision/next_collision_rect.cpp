@@ -21,7 +21,7 @@ public:
 };
 
 TEST_P(T_next_collision_rect, test_result){
-    double result = _next_collision(p, radius, l);
+    double result = _next_collision(p, radius, l, 0);
 
     // Can't make precise checks due to floating point errors
     double diff = fabs(result - expect);

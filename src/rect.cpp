@@ -102,7 +102,7 @@ double Rect::next_collision(Ball* b, double start){
         if(p.pocketed)
             return -1;
 
-        result = _next_collision(p, b->posData.radius, line);
+        result = _next_collision(p, b->posData.radius, line, start);
         if(result != -1 && result > start)
             return result;
     }
