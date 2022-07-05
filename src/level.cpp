@@ -9,8 +9,8 @@
 #include <SDL.h>
 
 const double PI = std::atan(1) * 4;
+const double speedScale = 20;
 int Level::tick = 0;
-
 
 Level::Level()
     : background{}, p1{}, p2{}, f1{}, b8{}, b1{}, b9{},
@@ -532,12 +532,13 @@ void Level::message(const std::string& msg, unsigned delay)
 
 void Level::shoot(double speed)
 {
+    speed*= speedScale;
+
     collobserver.reset_first_hit();
 
     double angle = (cue.getAngle() * PI) / 180.0;
 
     vec2d vel{-1 * std::cos(angle) * speed, -1 * std::sin(angle) * speed};
-    vel = vel * 6;
     cueball.setVel(vel);
 
     cueball.notify(Event::SUBJECT_CUE_COLLIDED);

@@ -74,7 +74,7 @@ void SearchTable::set_subject_time(Subject* s, double t){
 
 void SearchTable::set_index_max_time(int index, double t){
     if(index < NUM_BALLS){
-        for(int s=index+1; s<NUM_NON_BALLS; s++)
+        for(int s=index+1; s<NUM_NON_BALLS + NUM_BALLS; s++)
             time_safe[index][s] = min(t, time_safe[index][s]);
     }
 

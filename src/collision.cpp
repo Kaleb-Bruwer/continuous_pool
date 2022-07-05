@@ -117,14 +117,17 @@ double _next_collision(const Path path, double r, Line l, double start){
     }
 
     double t = quadratic_next(0.5*accel[1], speed[1], pos[1]);
-    if(t == -1 || t < start || (path.time_end != -1 && t + path.time_start >= path.time_end))
+    if(t == -1 || (path.time_end != -1 && t + path.time_start >= path.time_end))
         return -1;
 
     double x = pos[0] + speed[0] * t + 0.5 * t*t * accel[0];
     if(x < 0 || x > l.p2.magnitude())
         return -1;
 
-    return t + path.time_start;
+    t += path.time_start;
+    if(t >= start)
+        return t;
+    return -1;
 }
 
 double quadratic_next(double a, double b, double c){
