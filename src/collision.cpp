@@ -171,8 +171,6 @@ invalids apply_collision(Ball& b1, Subject* s, double time){
 
 
 invalids apply_collision(Ball& b1, Ball& b2, double time){
-    double combined_r = b1.posData.radius + b2.posData.radius;
-
     // Get next path section's info
     vec2d b1_pos = b1.pos_from_path(time);
     vec2d b1_vel = b1.vel_from_path(time);
@@ -181,7 +179,7 @@ invalids apply_collision(Ball& b1, Ball& b2, double time){
     vec2d b2_vel = b2.vel_from_path(time);
     // vec2d b1_accel = b1.accel_from_path(time);
 
-    collision2Ds(b1.mass, b2.mass, combined_r,
+    collision2Ds(b1.mass, b2.mass, 1,
         b1_pos[0], b1_pos[1], b2_pos[0], b2_pos[1],
         b1_vel[0], b1_vel[1], b2_vel[0], b2_vel[1]);
 
@@ -255,10 +253,10 @@ invalids apply_collision(Ball& b, const Pocket &p, double time){
 
 // https://www.plasmaphysics.org.uk/programs/coll2d_cpp.htm
 void collision2Ds(double m1, double m2, double R,
-                  double x1, double y1, double x2, double y2,
-                  double& vx1, double& vy1, double& vx2, double& vy2)
-{
-    double  m21,dvx2,a,x21,y21,vx21,vy21,fy21,sign,vx_cm,vy_cm;
+        double x1, double y1, double x2, double y2,
+        double& vx1, double& vy1, double& vx2, double& vy2){
+
+    double m21,dvx2,a,x21,y21,vx21,vy21,fy21,sign,vx_cm,vy_cm;
 
     m21=m2/m1;
     x21=x2-x1;
@@ -266,8 +264,8 @@ void collision2Ds(double m1, double m2, double R,
     vx21=vx2-vx1;
     vy21=vy2-vy1;
 
-    vx_cm = (m1*vx1+m2*vx2)/(m1+m2) ;
-    vy_cm = (m1*vy1+m2*vy2)/(m1+m2) ;
+    vx_cm = (m1*vx1+m2*vx2)/(m1+m2);
+    vy_cm = (m1*vy1+m2*vy2)/(m1+m2);
 
 
     //     *** return old velocities if balls are not approaching ***
@@ -278,11 +276,10 @@ void collision2Ds(double m1, double m2, double R,
     //         (for single precision calculations,
     //          1.0E-12 should be replaced by a larger value). **************
 
-    fy21=1.0E-12*std::fabs(y21);
-    if ( std::fabs(x21)<fy21 ) {
-        if (x21<0) { sign=-1; }
-        else { sign=1;}
-        x21=fy21*sign;
+    fy21=1.0E-12*fabs(y21);
+    if ( fabs(x21)<fy21 ) {
+               if (x21<0) { sign=-1; } else { sign=1;}
+               x21=fy21*sign;
     }
 
     //     ***  update velocities ***
