@@ -59,6 +59,12 @@ public:
         return *this;
     }
 
+    bool operator==(const vec<T,dims>& rhs) const{
+        for(int i=0; i<dims; i++)
+            if(val[i] != rhs[i])
+                return false;
+        return true;
+    }
 };
 
 template <class T, unsigned int dims>
@@ -94,6 +100,14 @@ vec<T, dims> operator-(const vec<T,dims> lhs, const vec<T,dims> rhs){
     }
 
     return result;
+}
+
+template<class T, unsigned int dims>
+vec<T,dims> abs(const vec<T,dims>& in){
+    vec<T,dims> out;
+    for(int i=0; i<dims; i++)
+        out[i] = abs(in[i]);
+    return out;
 }
 
 typedef vec<double, 2> vec2d;

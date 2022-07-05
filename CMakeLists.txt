@@ -57,6 +57,8 @@ set(TEST_SOURCES
     test/collision/quadratic_next.cpp
     test/collision/next_collision_balls.cpp
     test/collision/next_collision_rect.cpp
+    test/collision/collision_test_helpers.cpp
+    test/collision/apply_collision_rect.cpp
 )
 
 add_executable(${PROJECT_NAME} src/main.cpp ${SOURCES})
