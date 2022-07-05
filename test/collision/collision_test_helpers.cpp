@@ -1,8 +1,21 @@
 #include "collision_test_helpers.h"
 
 void assert_path_eq(const Path& lhs, const Path& rhs){
-    vec2d diff;
     double tolerance = 0.00001;
+
+    if(lhs.pocketed || rhs.pocketed){
+        ASSERT_TRUE(lhs.pocketed == rhs.pocketed) << "one of two paths pocketed";
+        // positional info irrelevant if pocketed
+
+        double diffd = abs(lhs.time_start - rhs.time_start);
+        ASSERT_TRUE(diffd < tolerance) << "time_start mismatch";
+
+        diffd = abs(lhs.time_end - rhs.time_end);
+        ASSERT_TRUE(diffd < tolerance) << "time_end mismatch";
+        return;
+    }
+
+    vec2d diff;
     diff = abs(lhs.pos_0 - rhs.pos_0);
     ASSERT_TRUE(diff[0] < tolerance) << "pos_0 mismatch";
     ASSERT_TRUE(diff[1] < tolerance) << "pos_0 mismatch";
