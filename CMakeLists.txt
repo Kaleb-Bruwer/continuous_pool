@@ -3,6 +3,14 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 project(simple_pool DESCRIPTION "Simple Pool game made with C++/SDL2" LANGUAGES CXX VERSION 0.1.0)
 
+set(CMAKE_CXX_COMPILER clang)
+
+SET(GCC_COVERAGE_COMPILE_FLAGS "-g")
+SET(GCC_COVERAGE_LINK_FLAGS    "-lm -lstdc++")
+
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
+
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
@@ -36,16 +44,7 @@ set(SOURCES
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
-target_compile_options(${PROJECT_NAME} PRIVATE
-    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
-        $<$<CONFIG:Debug>:
-            -O0 -Wall -Wextra -Weffc++ -Werror -pedantic-errors -g>
-        $<$<CONFIG:Release>:
-            -O3 -Wall -pipe -march=native>>
-    $<$<CXX_COMPILER_ID:MSVC>:
-        $<$<CONFIG:Debug>:/Od /Wall /Zi>>
-)
+
 
 target_link_libraries(${PROJECT_NAME}
                       ${SDL2_LIBRARY}
