@@ -3,13 +3,13 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 project(simple_pool DESCRIPTION "Simple Pool game made with C++/SDL2" LANGUAGES CXX VERSION 0.1.0)
 
-set(CMAKE_CXX_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
 
-SET(GCC_COVERAGE_COMPILE_FLAGS "-g")
-SET(GCC_COVERAGE_LINK_FLAGS    "-lm -lstdc++")
+set(GCC_COVERAGE_COMPILE_FLAGS "-fuse-ld=lld -flto -O2 -ffast-math")
+set(GCC_COVERAGE_LINK_FLAGS    "-fuse-ld=lld -flto -O2 -ffast-math -Wl,-mllvm=-load=/Enzyme/enzyme/build/Enzyme/ClangEnzyme-12.so")
 
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
-SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
@@ -44,7 +44,6 @@ set(SOURCES
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
-
 
 target_link_libraries(${PROJECT_NAME}
                       ${SDL2_LIBRARY}
