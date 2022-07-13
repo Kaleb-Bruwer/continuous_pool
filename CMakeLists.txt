@@ -41,6 +41,8 @@ set(SOURCES
     src/collisionobserver.cpp
     src/audioobserver.cpp
     src/cue.cpp
+
+    src/gradient.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

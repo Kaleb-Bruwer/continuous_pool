@@ -1,9 +1,11 @@
 #include "level.h"
 #include "mainwindow.h"
+#include "enzyme.h"
 
 #include <algorithm>
 #include <cmath>
 #include <string>
+#include <iostream>
 
 #include <SDL.h>
 
@@ -92,7 +94,12 @@ void Level::render()
 
 void Level::handle_when_still(SDL_Event& e)
 {
-    if (e.type == SDL_KEYDOWN && (e.key.keysym.sym == SDLK_SPACE || e.key.keysym.sym == SDLK_RETURN))
+    if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_e){
+        double a = gradient_descent(angle_descend);
+        cue.setDeg( (a/PI) * 180.0);
+        shoot(11.0);
+    }
+    else if (e.type == SDL_KEYDOWN && (e.key.keysym.sym == SDLK_SPACE || e.key.keysym.sym == SDLK_RETURN))
     {
         shoot(11.0);
     }
@@ -513,11 +520,34 @@ void Level::message(const std::string& msg, unsigned delay)
     SDL_Delay(delay);
 }
 
-void Level::shoot(double speed)
-{
+double Level::d_shoot(double speed, double angle){
+    return __enzyme_autodiff((void*)shoot_wrap,
+            enzyme_const, this,
+            enzyme_const, speed,
+            enzyme_out, angle);
+}
+
+double angle_descend(double angle){
+    return __enzyme_autodiff((void*)shoot_wrap,
+        enzyme_const, (Level*)0,
+        enzyme_const, 1.0, //Speed has linear influence (for now)
+        enzyme_out, angle);
+}
+
+double shoot_wrap(Level* t, double speed, double angle){
+    // Basic proof-of-concept before I do some rewrites (to support reversibility)
+    // double y = -1 * std::sin(angle) * speed;
+    double x = -1 * std::cos(angle) * speed;    
+
+    return x;
+}
+
+void Level::shoot(double speed){
     collobserver.reset_first_hit();
 
     double angle = (cue.getAngle() * PI) / 180.0;
+
+    std::cout << "Angle: " << angle << ", d_angle: " << d_shoot(speed, angle) << std::endl;
 
     cueball.movData.speed_y = -1 * std::sin(angle) * speed;
     cueball.movData.speed_x = -1 * std::cos(angle) * speed;

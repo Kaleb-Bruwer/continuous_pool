@@ -10,6 +10,8 @@
 #include "ball.h"
 #include "cue.h"
 
+#include "gradient.h"
+
 #include <vector>
 #include <utility>
 
@@ -59,7 +61,13 @@ private:
     void won(bool cur_turn);
     void lost(bool cur_turn);
     void message(const std::string& msg, unsigned delay);
+    double d_shoot(double speed, double angle);
     void shoot(double speed);
+
+    friend double shoot_wrap(Level *l, double speed, double angle);
 };
+
+double angle_descend(double angle);
+double shoot_wrap(Level *l, double speed, double angle);
 
 #endif // LEVEL_H
