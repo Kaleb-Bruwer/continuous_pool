@@ -5,7 +5,7 @@ project(simple_pool DESCRIPTION "Simple Pool game made with C++/SDL2" LANGUAGES 
 
 set(CMAKE_CXX_COMPILER clang++)
 
-set(GCC_COVERAGE_COMPILE_FLAGS "-fuse-ld=lld -flto -O2 -ffast-math")
+set(GCC_COVERAGE_COMPILE_FLAGS "-fuse-ld=lld -flto -O2 -ffast-math -g")
 set(GCC_COVERAGE_LINK_FLAGS    "-fuse-ld=lld -flto -O2 -ffast-math -Wl,-mllvm=-load=/Enzyme/enzyme/build/Enzyme/ClangEnzyme-12.so")
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
@@ -33,6 +33,7 @@ set(SOURCES
     src/gamestate.cpp
     src/intro.cpp
     src/level.cpp
+    src/levelNoGraphics.cpp
     src/table.cpp
     src/subject.cpp
     src/observer.cpp
