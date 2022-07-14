@@ -23,6 +23,8 @@ public:
     Ball();
     Ball(const std::string& path);
 
+    Ball clone() const; //Clone doesn't register observer(s)
+
     void setTex(const std::string& path);
     void setPos(double px, double py);
     void setVel(double sx, double sy);

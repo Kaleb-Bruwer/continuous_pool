@@ -29,6 +29,8 @@ protected:
 
 public:
     LevelNoGraphics();
+    LevelNoGraphics(const LevelNoGraphics& rhs);
+    const LevelNoGraphics& operator=(const LevelNoGraphics& rhs);
 
     virtual void handle_events(){};
     virtual void logic() override;

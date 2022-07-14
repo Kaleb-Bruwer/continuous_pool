@@ -16,6 +16,19 @@ Ball::Ball(const std::string& path)
     setTex(path);
 }
 
+Ball Ball::clone() const{
+    Ball result;
+    // result.texture = texture;
+    result.is_movable = is_movable;
+    result.is_visible = is_visible;
+    result.posData = posData;
+    result.movData = movData;
+    result.mass = mass;
+    result.id = id;
+
+    return result;
+}
+
 void Ball::setTex(const std::string& path)
 {
     texture.loadFromFile(path);

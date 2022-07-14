@@ -11,6 +11,7 @@ class Cue {
 
 public:
     Cue();
+    const Cue& operator=(const Cue& rhs);
 
     void render();
 

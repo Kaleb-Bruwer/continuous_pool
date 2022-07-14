@@ -269,18 +269,3 @@ double shoot_wrap(Level* t, double speed, double angle){
 
     return x;
 }
-
-void Level::shoot(double speed){
-    collobserver.reset_first_hit();
-
-    double angle = (cue.getAngle() * PI) / 180.0;
-
-    std::cout << "Angle: " << angle << ", d_angle: " << d_shoot(speed, angle) << std::endl;
-
-    cueball.movData.speed_y = -1 * std::sin(angle) * speed;
-    cueball.movData.speed_x = -1 * std::cos(angle) * speed;
-
-    cueball.notify(Event::SUBJECT_CUE_COLLIDED);
-    move_was_made = true;
-    mouse_pressed = false;
-}

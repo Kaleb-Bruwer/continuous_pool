@@ -28,17 +28,18 @@ public:
     virtual void handle_events() override;
     virtual void render() override;
 
-private:
-    void handle_when_still(SDL_Event& e);
+protected:
     virtual void create_balls();
     virtual void create_cue_ball();
-    void render_head();
+
     virtual void won(bool cur_turn);
     virtual void lost(bool cur_turn);
     virtual void message(const std::string& msg, unsigned delay);
-    double d_shoot(double speed, double angle);
-    void shoot(double speed);
+private:
+    void handle_when_still(SDL_Event& e);
+    void render_head();
 
+    double d_shoot(double speed, double angle);
     friend double shoot_wrap(Level *l, double speed, double angle);
 };
 

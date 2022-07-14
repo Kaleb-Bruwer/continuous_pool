@@ -14,6 +14,34 @@ LevelNoGraphics::LevelNoGraphics()
     create_cue_ball();
 }
 
+LevelNoGraphics::LevelNoGraphics(const LevelNoGraphics& rhs){
+    *this = rhs;
+}
+
+const LevelNoGraphics& LevelNoGraphics::operator=(const LevelNoGraphics& rhs){
+    collobserver = CollisionObserver();
+    tab = Table(&collobserver);
+
+    for(int i=0; i<15; i++){
+        balls[i] = rhs.balls[i].clone();
+            balls[i].addObserver(&collobserver);   
+    }
+
+    cueball = rhs.cueball.clone();
+    cueball.addObserver(&collobserver);
+
+    cue = rhs.cue;
+    pockets = rhs.pockets;
+
+    moving_state = rhs.moving_state;
+    player1turn = rhs.player1turn;
+    move_was_made = rhs.move_was_made;
+    team_color = rhs.team_color;
+    winner = rhs.winner;
+    mouse_pressed = rhs.mouse_pressed;
+}
+
+
 void LevelNoGraphics::logic()
 {
     moving_state = false;
@@ -340,4 +368,19 @@ void LevelNoGraphics::won(bool cur_turn){
 
 void LevelNoGraphics::lost(bool cur_turn){
     winner = cur_turn ? 2 : 1;
+}
+
+void LevelNoGraphics::shoot(double speed){
+    collobserver.reset_first_hit();
+
+    double angle = (cue.getAngle() * PI) / 180.0;
+
+    // std::cout << "Angle: " << angle << ", d_angle: " << d_shoot(speed, angle) << std::endl;
+
+    cueball.movData.speed_y = -1 * std::sin(angle) * speed;
+    cueball.movData.speed_x = -1 * std::cos(angle) * speed;
+
+    cueball.notify(Event::SUBJECT_CUE_COLLIDED);
+    move_was_made = true;
+    mouse_pressed = false;
 }
