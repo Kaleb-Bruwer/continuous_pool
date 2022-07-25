@@ -1,26 +1,25 @@
 # Simple Pool
-[![Build Status](https://travis-ci.org/phoemur/simple_pool.svg?branch=master)](https://travis-ci.org/phoemur/simple_pool)
+WORK IN PROGRESS  
 
-This is a simple 2D billiards game made with C++ and SDL2
+Using phoemur/simple_pool as a base, the goal of this project is to create a pool-playing agent that uses auto-differentiation as a local search tecnique.
 
 # Requirements
-  - C++14
-  
-  - SDL2
-  
-  - SDL2_image
-  
-  - SDL2_ttf
-  
-  - SDL2_mixer
+See the devcontainer
   
 # Build and Run
-    mkdir -p build
-    cd build
-    cmake ..
-    make
-    cd ..
-    ./simple_pool
+While inside the devcontainer:  
+```
+mkdir -p build
+cd build
+cmake ..
+make
+```
 
-
+From outside the devcontainer:
+```
+./simple_pool
+```
 ![](screenshot.png)
+
+# Using the agent
+As of right now, only a proof-of-concept functionality is provided. In game, the "E" key can be pressed to make the agent attempt to shoot the cueball to the position (400,200).
