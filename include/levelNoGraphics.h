@@ -11,6 +11,8 @@
 
 extern const double PI;
 
+class ForwardLevel;
+
 class LevelNoGraphics : public GameState{
 protected:
     CollisionObserver collobserver;
@@ -26,6 +28,9 @@ protected:
     int team_color = 0; // 0 = undefined, 1 = player1 kills solid, 2 = player1 kills stripes
     int winner = 0; // 0 = undefined, 1 = player1, 2 = player2
     bool mouse_pressed = false;
+
+    friend class ForwardLevel;
+    friend class Level;
 
 public:
     LevelNoGraphics();

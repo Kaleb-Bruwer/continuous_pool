@@ -4,9 +4,11 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 project(simple_pool DESCRIPTION "Simple Pool game made with C++/SDL2" LANGUAGES CXX VERSION 0.1.0)
 
 set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_BUILD_TYPE Debug)
 
-set(GCC_COVERAGE_COMPILE_FLAGS "-fuse-ld=lld -flto -O2 -ffast-math -g")
+set(GCC_COVERAGE_COMPILE_FLAGS "-flto -O2 -ffast-math -g")
 set(GCC_COVERAGE_LINK_FLAGS    "-fuse-ld=lld -flto -O2 -ffast-math -Wl,-mllvm=-load=/Enzyme/enzyme/build/Enzyme/ClangEnzyme-12.so")
+# set(GCC_COVERAGE_LINK_FLAGS    "-fuse-ld=lld -flto -ffast-math -Wl,-mllvm=-load=/Enzyme/enzyme/build/Enzyme/ClangEnzyme-12.so,-mllvm=-enzyme-print,-mllvm=-enzyme-preopt=0")
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
@@ -34,6 +36,7 @@ set(SOURCES
     src/intro.cpp
     src/level.cpp
     src/levelNoGraphics.cpp
+    src/forwardlevel.cpp
     src/table.cpp
     src/subject.cpp
     src/observer.cpp

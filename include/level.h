@@ -28,6 +28,8 @@ public:
     virtual void handle_events() override;
     virtual void render() override;
 
+    double stop_dist(double angleR, double speed);
+
 protected:
     virtual void create_balls();
     virtual void create_cue_ball();
@@ -38,6 +40,10 @@ protected:
 private:
     void handle_when_still(SDL_Event& e);
     void render_head();
+
+    void auto_shoot();
+    void d_stop_dist(double angleR, double& d_angleR, double speed, double& d_speed);
+    void d_stop_dist_num(double angleR, double& d_angleR, double speed, double& d_speed);
 
     double d_shoot(double speed, double angle);
     friend double shoot_wrap(Level *l, double speed, double angle);

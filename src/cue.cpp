@@ -13,6 +13,7 @@ const Cue& Cue::operator=(const Cue& rhs){
     posY = rhs.posY;
     degrees = rhs.degrees;
     center = rhs.center;
+    return *this;
 }
 
 void Cue::render()

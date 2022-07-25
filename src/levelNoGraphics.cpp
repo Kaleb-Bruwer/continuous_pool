@@ -4,6 +4,7 @@
 #include <cmath>
 #include <string>
 #include <iostream>
+#include <cstdio>
 
 const double PI = std::atan(1) * 4;
 
@@ -20,11 +21,12 @@ LevelNoGraphics::LevelNoGraphics(const LevelNoGraphics& rhs){
 
 const LevelNoGraphics& LevelNoGraphics::operator=(const LevelNoGraphics& rhs){
     collobserver = CollisionObserver();
-    tab = Table(&collobserver);
+
+    tab.create(rhs.tab, &collobserver);
 
     for(int i=0; i<15; i++){
         balls[i] = rhs.balls[i].clone();
-            balls[i].addObserver(&collobserver);   
+        balls[i].addObserver(&collobserver);
     }
 
     cueball = rhs.cueball.clone();
@@ -39,6 +41,8 @@ const LevelNoGraphics& LevelNoGraphics::operator=(const LevelNoGraphics& rhs){
     team_color = rhs.team_color;
     winner = rhs.winner;
     mouse_pressed = rhs.mouse_pressed;
+
+    return *this;
 }
 
 
@@ -74,7 +78,6 @@ void LevelNoGraphics::logic()
 
 void LevelNoGraphics::create_balls()
 {
-    std::cout << "LevelNoGraphics::create_balls\n";
     // Create 15 balls
     for (int i = 1; i <= 15; ++i)
     {
@@ -105,7 +108,6 @@ void LevelNoGraphics::create_balls()
 
 void LevelNoGraphics::create_cue_ball()
 {
-    std::cout << "LevelNoGraphics::create_cue_ball\n";
     // Create and place the cue ball
     cueball = Ball{};
     cueball.id = 0;

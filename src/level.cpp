@@ -1,11 +1,13 @@
 #include "level.h"
 #include "mainwindow.h"
 #include "enzyme.h"
+#include "forwardlevel.h"
 
 #include <algorithm>
 #include <cmath>
 #include <string>
 #include <iostream>
+#include <cstdio>
 
 #include <SDL.h>
 
@@ -63,9 +65,7 @@ void Level::render()
 void Level::handle_when_still(SDL_Event& e)
 {
     if(e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_e){
-        double a = gradient_descent(angle_descend);
-        cue.setDeg( (a/PI) * 180.0);
-        shoot(11.0);
+        auto_shoot();
     }
     else if (e.type == SDL_KEYDOWN && (e.key.keysym.sym == SDLK_SPACE || e.key.keysym.sym == SDLK_RETURN))
     {
@@ -121,7 +121,6 @@ void Level::handle_when_still(SDL_Event& e)
 
 void Level::create_balls()
 {
-    std::cout << "Level::create_balls\n";
     // Create 15 balls
     for (int i = 1; i <= 15; ++i)
     {
@@ -154,7 +153,6 @@ void Level::create_balls()
 
 void Level::create_cue_ball()
 {
-    std::cout << "Level::create_cue_ball\n";
     // Create and place the cue ball
     cueball = Ball{};
     cueball.setTex("./pool_assets/ball0.png");
@@ -248,11 +246,59 @@ void Level::message(const std::string& msg, unsigned delay)
     SDL_Delay(delay);
 }
 
+void Level::auto_shoot(){
+    printf("!!!!!!!!!!START AUTOSHOOT !!!!!!!!!!\n");
+    double speed = 1;
+    double angle = 0;
+    descent_stop_dist(&Level::d_stop_dist_num, this, angle, speed);
+    
+    cue.setDeg( (angle/PI) * 180.0);
+    shoot(speed);
+
+    ForwardLevel forward(*this);
+    forward.cue.setDeg((angle/PI) * 180.0);
+    forward.shoot(speed);
+    forward.run_to_stop();
+    printf("Pos after autoshoot: (%f, %f)\n", forward.cueball.posData.pos_x, forward.cueball.posData.pos_y);
+    
+    printf("!!!!!!!!!!END AUTOSHOOT !!!!!!!!!!\n\n");
+
+}
+
 double Level::d_shoot(double speed, double angle){
     return __enzyme_autodiff((void*)shoot_wrap,
             enzyme_const, this,
             enzyme_const, speed,
             enzyme_out, angle);
+}
+
+void Level::d_stop_dist(double angleR, double& d_angleR, double speed, double& d_speed){
+    printf("Level::d_stop_dist\n");
+    ForwardLevel forward(*this);
+
+    __enzyme_autodiff((void*)stop_dist_wrap,
+        enzyme_const, &forward,
+        enzyme_dup, angleR, d_angleR,
+        enzyme_dup, speed, d_speed
+    );
+}
+
+void Level::d_stop_dist_num(double angleR, double& d_angleR, double speed, double& d_speed){
+    printf("Level::d_stop_dist_num\n");
+
+    double step_size = 0.00001;
+
+    ForwardLevel forward(*this);
+    double baseline = forward.stop_dist(angleR, speed);
+
+    forward = ForwardLevel(*this);
+    double step_angle = forward.stop_dist(angleR + step_size, speed);
+
+    forward = ForwardLevel(*this);
+    double step_speed = forward.stop_dist(angleR, speed + step_size);
+
+    d_angleR = (step_angle - baseline)/step_size;
+    d_speed = (step_speed - baseline)/step_size;
 }
 
 double angle_descend(double angle){
@@ -269,3 +315,4 @@ double shoot_wrap(Level* t, double speed, double angle){
 
     return x;
 }
+
