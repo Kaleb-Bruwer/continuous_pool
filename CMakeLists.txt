@@ -47,6 +47,7 @@ set(SOURCES
     src/cue.cpp
 
     src/gradient.cpp
+    src/helpers.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

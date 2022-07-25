@@ -9,6 +9,7 @@ public:
     void run_to_stop();
 
     double stop_dist(double angleR, double speed);
+    double stop_dist_card(double x, double y);
 
 };
 

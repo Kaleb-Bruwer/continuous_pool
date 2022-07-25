@@ -2,6 +2,7 @@
 #include "mainwindow.h"
 #include "enzyme.h"
 #include "forwardlevel.h"
+#include "helpers.h"
 
 #include <algorithm>
 #include <cmath>
@@ -248,16 +249,20 @@ void Level::message(const std::string& msg, unsigned delay)
 
 void Level::auto_shoot(){
     printf("!!!!!!!!!!START AUTOSHOOT !!!!!!!!!!\n");
-    double speed = 1;
-    double angle = 0;
-    descent_stop_dist(&Level::d_stop_dist_num, this, angle, speed);
+    double x = 0;
+    double y = 0;
+    descent_stop_dist(&Level::d_stop_dist_num, this, x, y);
     
-    cue.setDeg( (angle/PI) * 180.0);
-    shoot(speed);
+    std::pair<double, double> rad = card_to_rad({x,y});
+
+    printf("Chosen parameters (angle,speed): (%f, %f)\n", rad.first, rad.second);
+
+    cue.setDeg( (rad.first/PI) * 180.0);
+    shoot(rad.second);
 
     ForwardLevel forward(*this);
-    forward.cue.setDeg((angle/PI) * 180.0);
-    forward.shoot(speed);
+    forward.cue.setDeg((rad.first/PI) * 180.0);
+    forward.shoot(rad.second);
     forward.run_to_stop();
     printf("Pos after autoshoot: (%f, %f)\n", forward.cueball.posData.pos_x, forward.cueball.posData.pos_y);
     
@@ -283,22 +288,22 @@ void Level::d_stop_dist(double angleR, double& d_angleR, double speed, double& d
     );
 }
 
-void Level::d_stop_dist_num(double angleR, double& d_angleR, double speed, double& d_speed){
+void Level::d_stop_dist_num(double x, double& d_x, double y, double& d_y){
     printf("Level::d_stop_dist_num\n");
 
     double step_size = 0.00001;
 
     ForwardLevel forward(*this);
-    double baseline = forward.stop_dist(angleR, speed);
+    double baseline = forward.stop_dist_card(x, y);
 
     forward = ForwardLevel(*this);
-    double step_angle = forward.stop_dist(angleR + step_size, speed);
+    double step_x = forward.stop_dist_card(x + step_size, y);
 
     forward = ForwardLevel(*this);
-    double step_speed = forward.stop_dist(angleR, speed + step_size);
+    double step_y = forward.stop_dist_card(x, y + step_size);
 
-    d_angleR = (step_angle - baseline)/step_size;
-    d_speed = (step_speed - baseline)/step_size;
+    d_x = (step_x - baseline)/step_size;
+    d_y = (step_y - baseline)/step_size;
 }
 
 double angle_descend(double angle){

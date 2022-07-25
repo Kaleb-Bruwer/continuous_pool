@@ -1,9 +1,11 @@
 #include "gradient.h"
 
 #include "level.h"
+#include "helpers.h"
 
 #include <cmath>
 #include <cstdio>
+
 
 double gradient_descent(descendable func, double val, double min, double max){
     double gradient = 1;
@@ -21,26 +23,20 @@ double gradient_descent(descendable func, double val, double min, double max){
     return val;
 }
 
-void descent_stop_dist(level_func func, Level* l, double& angleR, double& speed){
-    double d_angle = 0, d_speed = 0;
-
-    double rate_sp = 0.005;
-    double rate_ang = 0.0005;
+void descent_stop_dist(level_func func, Level* l, double& x, double& y){
+    double d_x, d_y;
+    double rate = 0.005;
 
     int passes = 0;
     do{
-        printf("Pass: %d, Angle: %f, d_angle: %f, Speed: %f, d_speed: %f\n", passes, angleR, d_angle, speed, d_speed);
-        (l->*func)(angleR, d_angle, speed, d_speed);
+        printf("Pass: %d, xy: (%f, %f), d_xy: (%f, %f)\n", passes, x, y, d_x, d_y);
+        (l->*func)(x, d_x, y, d_y);
 
-        angleR -= d_angle * rate_ang;
-
-        speed -= d_speed * rate_sp;
-        speed = fmax(speed, 0.01);
-        speed = fmin(speed, 11);
+        x -= d_x * rate;
+        y -= d_y * rate;
 
         passes++;
-        rate_sp *= 0.98;
-        rate_ang *= 0.98;
-    }while((abs(d_angle) > 0.001 || abs(d_speed) > 0.001) && passes < 100);
-    printf("Pass: %d, Angle: %f, d_angle: %f, Speed: %f, d_speed: %f\n", passes, angleR, d_angle, speed, d_speed);
+        rate *= 0.95;
+    }while((abs(d_x) > 0.001 || abs(d_y) > 0.001) && passes < 100);
+    printf("Pass: %d, xy: (%f, %f), d_xy: (%f, %f)\n", passes, x, y, d_x, d_y);
 }

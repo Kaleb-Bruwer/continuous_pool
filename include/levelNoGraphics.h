@@ -5,11 +5,10 @@
 #include "collisionobserver.h"
 #include "ball.h"
 #include "cue.h"
+#include "helpers.h"
 
 #include <vector>
 #include <utility>
-
-extern const double PI;
 
 class ForwardLevel;
 

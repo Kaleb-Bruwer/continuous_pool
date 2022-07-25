@@ -1,6 +1,8 @@
 #include "forwardlevel.h"
 #include <cstdio>
 
+#include "helpers.h"
+
 ForwardLevel::ForwardLevel(const LevelNoGraphics& original){
     LevelNoGraphics* thisL = (LevelNoGraphics*) this;
     *thisL = original;
@@ -28,6 +30,12 @@ double ForwardLevel::stop_dist(double angleR, double speed){
 
     return sqrt(diff_x*diff_x + diff_y*diff_y);
 }
+
+double ForwardLevel::stop_dist_card(double x, double y){
+    std::pair<double, double> rad = card_to_rad({x,y});
+    return stop_dist(rad.first, rad.second);
+}
+
 
 double stop_dist_wrap(ForwardLevel* l, double angleR, double speed){
     return l->stop_dist(angleR, speed);

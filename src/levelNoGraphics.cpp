@@ -6,8 +6,6 @@
 #include <iostream>
 #include <cstdio>
 
-const double PI = std::atan(1) * 4;
-
 LevelNoGraphics::LevelNoGraphics()
     : collobserver{}, tab{&collobserver}
 {

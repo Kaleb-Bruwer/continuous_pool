@@ -43,7 +43,7 @@ private:
 
     void auto_shoot();
     void d_stop_dist(double angleR, double& d_angleR, double speed, double& d_speed);
-    void d_stop_dist_num(double angleR, double& d_angleR, double speed, double& d_speed);
+    void d_stop_dist_num(double x, double& d_x, double y, double& d_y);
 
     double d_shoot(double speed, double angle);
     friend double shoot_wrap(Level *l, double speed, double angle);
