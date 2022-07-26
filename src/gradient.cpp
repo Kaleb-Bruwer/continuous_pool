@@ -27,10 +27,10 @@ double gradient_descent(descendable func, double val, double min, double max){
 std::pair<double, double> stop_dist_multistart(level_func func, Level* l){
     std::vector<std::pair<double, double>> starts = {
         {0,0}, 
-        {-2, -2},
-        {-2, 2},
-        {2, -2},
-        {2, 2},
+        {-0.2, -0.2},
+        {-0.2, 0.2},
+        {0.2, -0.2},
+        {0.2, 0.2},
         {1,0},
         {0,1},
         {-1,0},
@@ -69,9 +69,12 @@ double descent_stop_dist(level_func func, Level* l, double& x, double& y){
         if(passes % 10 == 0)
             printf("Pass: %d, xy: (%f, %f), d_xy: (%f, %f)\n", passes, x, y, d_x, d_y);
         (l->*func)(x, d_x, y, d_y);
+        
+        d_x = fmin(d_x, 100);
+        d_y = fmin(d_y, 100);
 
-        d_x *= d_x;
-        d_y *= d_y;
+        d_x = fmax(d_x, -100);
+        d_y = fmax(d_y, -100);
 
         change_x = d_x * rate + old_change_x;
         change_y = d_y * rate + old_change_y;
