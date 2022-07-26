@@ -249,7 +249,7 @@ void Level::message(const std::string& msg, unsigned delay)
 
 void Level::auto_shoot(){
     printf("!!!!!!!!!!START AUTOSHOOT !!!!!!!!!!\n");
-    double x = 0;
+    double x = 1;
     double y = 0;
     descent_stop_dist(&Level::d_stop_dist_num, this, x, y);
     
