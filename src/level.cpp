@@ -249,11 +249,9 @@ void Level::message(const std::string& msg, unsigned delay)
 
 void Level::auto_shoot(){
     printf("!!!!!!!!!!START AUTOSHOOT !!!!!!!!!!\n");
-    double x = 1;
-    double y = 0;
-    descent_stop_dist(&Level::d_stop_dist_num, this, x, y);
     
-    std::pair<double, double> rad = card_to_rad({x,y});
+    std::pair<double, double> velocity = stop_dist_multistart(&Level::d_stop_dist_num, this);    
+    std::pair<double, double> rad = card_to_rad(velocity);
 
     printf("Chosen parameters (angle,speed): (%f, %f)\n", rad.first, rad.second);
 
@@ -278,7 +276,6 @@ double Level::d_shoot(double speed, double angle){
 }
 
 void Level::d_stop_dist(double angleR, double& d_angleR, double speed, double& d_speed){
-    printf("Level::d_stop_dist\n");
     ForwardLevel forward(*this);
 
     __enzyme_autodiff((void*)stop_dist_wrap,
@@ -289,8 +286,6 @@ void Level::d_stop_dist(double angleR, double& d_angleR, double speed, double& d
 }
 
 void Level::d_stop_dist_num(double x, double& d_x, double y, double& d_y){
-    printf("Level::d_stop_dist_num\n");
-
     double step_size = 0.00001;
 
     ForwardLevel forward(*this);
