@@ -6,6 +6,8 @@
 #include <cmath>
 #include <cstdio>
 #include <float.h>
+#include <thread>
+#include <functional>
 
 
 double gradient_descent(descendable func, double val, double min, double max){
@@ -34,18 +36,30 @@ std::pair<double, double> stop_dist_multistart(level_func func, Level* l){
         {1,0},
         {0,1},
         {-1,0},
-        {0, -1}
+        {0, -1},
+        {-4,0},
+        {-4,0.2},
+        {-4,-0.2}
     };
 
-    int index = 0;
-    double best = descent_stop_dist(func, l, starts[0].first, starts[0].second);
-    printf("start (%f, %f) --> %f\n", starts[0].first, starts[0].second, best);
+    int index = -1;
+    double best = DBL_MAX;
 
-    for(int i=1; i<starts.size(); i++){
-        double temp = descent_stop_dist(func, l, starts[i].first, starts[i].second);
-        printf("start (%f, %f) --> %f\n", starts[i].first, starts[i].second, temp);
-        if(temp < best){
-            best = temp;
+    std::vector<double> results(starts.size(), DBL_MAX);
+    std::vector<std::thread*> threads(starts.size());
+
+    // Each is checked independently
+    for(int i=0; i<starts.size(); i++){
+        // threads[i] = new std::thread(dummy_func);
+        threads[i] = new std::thread(descent_stop_dist_card, func, l, &starts[i], &results[i]);
+        threads[i]->join();
+    }
+
+    for(int i=0; i<starts.size(); i++){
+        delete threads[i];
+
+        if(results[i] < best){
+            best = results[i];
             index = i;
         }
     }
@@ -53,8 +67,10 @@ std::pair<double, double> stop_dist_multistart(level_func func, Level* l){
     return starts[index];
 }
 
+void descent_stop_dist_card(level_func func, Level* l, std::pair<double, double>* start, double* result){
+    double& x = start->first;
+    double& y = start->second;
 
-double descent_stop_dist(level_func func, Level* l, double& x, double& y){
     double d_x = 0, d_y = 0;
 
     double rate = 0.01;
@@ -66,10 +82,9 @@ double descent_stop_dist(level_func func, Level* l, double& x, double& y){
     int passes = 0;
     const int max_passes = 150;
     do{
-        if(passes % 10 == 0)
-            printf("Pass: %d, xy: (%f, %f), d_xy: (%f, %f)\n", passes, x, y, d_x, d_y);
+        printf("Pass: %d, xy: (%f, %f), d_xy: (%f, %f)\n", passes, x, y, d_x, d_y);
         (l->*func)(x, d_x, y, d_y);
-        
+
         d_x = fmin(d_x, 100);
         d_y = fmin(d_y, 100);
 
@@ -78,6 +93,9 @@ double descent_stop_dist(level_func func, Level* l, double& x, double& y){
 
         change_x = d_x * rate + old_change_x;
         change_y = d_y * rate + old_change_y;
+
+        if(change_x == 0 && change_y == 0)
+            return;
 
         x -= change_x;
         y -= change_y;
@@ -97,5 +115,5 @@ double descent_stop_dist(level_func func, Level* l, double& x, double& y){
     printf("Final Pass (%d), xy: (%f, %f), d_xy: (%f, %f)\n", passes, x, y, d_x, d_y);
 
     ForwardLevel forward(*l);
-    return forward.stop_dist_card(x,y);
+    *result = forward.stop_dist_card(x,y);
 }

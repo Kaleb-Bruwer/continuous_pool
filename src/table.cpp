@@ -139,3 +139,17 @@ bool Table::is_pocketed(const Ball& b)
 
     return false;
 }
+
+double Table::dist_to_pocket(double x, double y){
+    double closest = DBL_MAX;
+
+    for(int i=0; i<6; i++){
+        double dist_sq = pow((x - pocket_sensors[i].x),2)
+                       + pow((y - pocket_sensors[i].y),2);
+
+        if(dist_sq < closest){
+            closest = dist_sq;
+        }
+    }
+    return sqrt(closest);
+}

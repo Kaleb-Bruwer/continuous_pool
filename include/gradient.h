@@ -12,3 +12,5 @@ double gradient_descent(descendable func, double start = 0, double min = -DBL_MA
 
 std::pair<double, double> stop_dist_multistart(level_func, Level*);
 double descent_stop_dist(level_func, Level*, double&, double&);
+
+void descent_stop_dist_card(level_func func, Level* l, std::pair<double, double>* start, double* result);

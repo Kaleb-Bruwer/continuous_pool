@@ -250,7 +250,7 @@ void Level::message(const std::string& msg, unsigned delay)
 void Level::auto_shoot(){
     printf("!!!!!!!!!!START AUTOSHOOT !!!!!!!!!!\n");
     
-    std::pair<double, double> velocity = stop_dist_multistart(&Level::d_stop_dist_num, this);    
+    std::pair<double, double> velocity = stop_dist_multistart(&Level::d_pocket_dist_num, this);    
     std::pair<double, double> rad = card_to_rad(velocity);
 
     printf("Chosen parameters (angle,speed): (%f, %f)\n", rad.first, rad.second);
@@ -299,6 +299,31 @@ void Level::d_stop_dist_num(double x, double& d_x, double y, double& d_y){
 
     d_x = (step_x - baseline)/step_size;
     d_y = (step_y - baseline)/step_size;
+}
+
+void Level::d_pocket_dist_num(double x, double& d_x, double y, double& d_y){
+    double step_size = 0.00001;
+
+    d_x = 0;
+    d_y = 0;
+
+    bool player = ((player1turn && team_color == 2) || (!player1turn && team_color == 1));
+
+    ForwardLevel forward(*this);
+    double baseline = forward.sink_balls(x, y, player);
+    printf("Pocket dist %f\n", baseline);
+
+    if(baseline == 0)
+        return;
+
+    forward = ForwardLevel(*this);
+    double step_x = forward.sink_balls(x + step_size, y, player);
+
+    forward = ForwardLevel(*this);
+    double step_y = forward.sink_balls(x, y + step_size, player);
+
+    d_x = -(step_x - baseline)/step_size;
+    d_y = -(step_y - baseline)/step_size;  
 }
 
 double angle_descend(double angle){

@@ -57,6 +57,7 @@ target_link_libraries(${PROJECT_NAME}
                       ${SDL2_IMAGE_LIBRARIES}
                       ${SDL2_TTF_LIBRARIES}
                       ${SDL2_MIXER_LIBRARIES}
+                      pthread
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})

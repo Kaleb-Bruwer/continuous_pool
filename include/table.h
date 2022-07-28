@@ -24,6 +24,7 @@ public:
 
     void render();
     bool is_pocketed(const Ball& b);
+    double dist_to_pocket(double x, double y);
 
     double  getWidth() const noexcept {return width; }
     double getHeight() const noexcept {return height;}
